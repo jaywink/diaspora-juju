@@ -1,0 +1,97 @@
+#!/bin/bash
+
+set -e 
+
+juju-log "Installing dependencies"
+apt-get -y install build-essential git imagemagick libmagickwand-dev nodejs libcurl4-openssl-dev libxml2-dev libxslt-dev libmysqlclient-dev apache2 redis-server
+apt-add-repository -y ppa:jaywink/curldebian
+apt-get update && apt-get -y upgrade
+
+juju-log "Creating apache2 configuration"
+# TODO server name from config
+# TODO documentroot + public directory
+# TODO certs
+cat <<EOF > /etc/apache2/sites-available/diaspora
+<VirtualHost *:80>
+    ServerName diaspora.example.org
+    RedirectPermanent / https://diaspora.example.org/
+</VirtualHost>
+<VirtualHost *:443>
+    ServerName diaspora.example.org
+    DocumentRoot /home/user/diaspora/public
+     
+    RewriteEngine On
+     
+    RewriteCond %{DOCUMENT_ROOT}/%{REQUEST_FILENAME} !-f
+    RewriteRule ^/(.*)$ balancer://upstream%{REQUEST_URI} [P,QSA,L]
+     
+    <Proxy balancer://upstream>
+        BalancerMember http://127.0.0.1:3000
+    </Proxy>
+     
+    ProxyRequests Off
+    ProxyVia On
+    ProxyPreserveHost On
+    RequestHeader set X_FORWARDED_PROTO https
+     
+    <Proxy *>
+        Order allow,deny
+        Allow from all
+    </Proxy>
+     
+    <Directory /home/user/diaspora/public>
+        Allow from all
+        AllowOverride all
+        Options -MultiViews
+    </Directory>
+     
+    SSLEngine On
+    SSLCertificateFile /path/to/cert
+    SSLCertificateKeyFile /path/to/private_key
+    # maybe not needed, need for example for startssl to point to a local
+    # copy of http://www.startssl.com/certs/sub.class1.server.ca.pem
+    SSLCertificateChainFile /path/to/chain_file
+</VirtualHost>
+EOF
+
+juju-log "Enable some apache2 mods"
+a2enmod ssl
+a2enmod rewrite
+a2enmod headers
+a2enmod proxy
+a2enmod proxy_http
+a2enmod proxy_balancer
+
+juju-log "Enable apache2 site"
+a2ensite diaspora
+
+juju-log "Adding diaspora user"
+adduser --quiet diaspora
+sudo -i -u diaspora
+
+juju-log "Install RVM"
+curl -L dspr.tk/1t | bash
+echo '[[ -s "~/.rvm/scripts/rvm" ]] && source "~/.rvm/scripts/rvm"' >> ~/.bashrc
+source ~/.bashrc
+
+juju-log "Installing Ruby"
+rvm install 1.9.3-p484
+
+juju-log "Check out diaspora source"
+cd ~
+git clone -b master git://github.com/diaspora/diaspora.git
+cd diaspora
+cp config/database.yml.example config/database.yml
+cp config/diaspora.yml.example config/diaspora.yml
+
+# TODO add configs
+
+juju-log "Install ruby gems"
+RAILS_ENV=production  bundle install --without test development
+
+# TODO DB setup needs to be done in another hook
+#RAILS_ENV=production  bundle exec rake db:create db:schema:load
+
+# TODO precompile needs to be done in another hook
+#bundle exec rake assets:precompile
+

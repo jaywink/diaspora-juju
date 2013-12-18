@@ -1,0 +1,30 @@
+#!/bin/bash
+
+set -e # If any command fails, stop execution of the hook with that error
+
+db_user=`relation-get user`
+db_db=`relation-get database`
+db_pass=`relation-get password`
+db_host=`relation-get private-address`
+
+if [ -z "$db_db" ]; then
+  juju-log "No database information sent yet. Silently exiting"
+  exit 0
+fi
+
+# TODO set user
+vanilla_config="/home/user/diaspora/config/diaspora.yml"
+
+# TODO set creds in config
+# cat <<EOF > $vanilla_config
+# <?php if (!defined('APPLICATION')) exit();
+
+# \$Configuration['Database']['Host'] = '$db_host';
+# \$Configuration['Database']['Name'] = '$db_db';
+# \$Configuration['Database']['User'] = '$db_user';
+# \$Configuration['Database']['Password'] = '$db_pass';
+# EOF
+
+juju-log "Make the application port available, now that we know we have a site to expose"
+
+open-port 80
