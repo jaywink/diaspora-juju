@@ -2,23 +2,26 @@
 
 set -e 
 
+# check some configs
+if [[ -z `config-get hostname` ]]; then
+    juju-log "Hostname needs to be specified in charm config!"
+    exit 1  
+fi
+
 juju-log "Installing dependencies"
 apt-get -y install build-essential git imagemagick libmagickwand-dev nodejs libcurl4-openssl-dev libxml2-dev libxslt-dev libmysqlclient-dev apache2 redis-server
 apt-add-repository -y ppa:jaywink/curldebian
 apt-get update && apt-get -y upgrade
 
 juju-log "Creating apache2 configuration"
-# TODO server name from config
-# TODO documentroot + public directory
-# TODO certs
 cat <<EOF > /etc/apache2/sites-available/diaspora
 <VirtualHost *:80>
-    ServerName diaspora.example.org
-    RedirectPermanent / https://diaspora.example.org/
+    ServerName `config-get hostname`
+    RedirectPermanent / https://`config-get hostname`/
 </VirtualHost>
 <VirtualHost *:443>
-    ServerName diaspora.example.org
-    DocumentRoot /home/user/diaspora/public
+    ServerName `config-get hostname`
+    DocumentRoot /home/ubuntu/diaspora/public
      
     RewriteEngine On
      
@@ -39,18 +42,18 @@ cat <<EOF > /etc/apache2/sites-available/diaspora
         Allow from all
     </Proxy>
      
-    <Directory /home/user/diaspora/public>
+    <Directory /home/ubuntu/diaspora/public>
         Allow from all
         AllowOverride all
         Options -MultiViews
     </Directory>
      
     SSLEngine On
-    SSLCertificateFile /path/to/cert
-    SSLCertificateKeyFile /path/to/private_key
+    SSLCertificateFile /etc/ssl/certs/diaspora.crt
+    SSLCertificateKeyFile /etc/ssl/private/diaspora.key
     # maybe not needed, need for example for startssl to point to a local
     # copy of http://www.startssl.com/certs/sub.class1.server.ca.pem
-    SSLCertificateChainFile /path/to/chain_file
+    SSLCertificateChainFile /etc/ssl/certs/sub.class1.server.ca.pem
 </VirtualHost>
 EOF
 
