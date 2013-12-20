@@ -2,5 +2,15 @@ options:
   hostname:
     type: string
     description: "Hostname for the server"
-
-
+  repository:
+    type: string
+    default: diaspora/diaspora
+    description: "Repository to use. Does not normally need to be changed."
+  branch:
+    type: string
+    default: master
+    description: "Branch to use. Does not normally need to be changed."
+  podname:
+    type: string
+    default: Diaspora*
+    description: "A name for the pod. The most difficult setting. Can be changed later."

@@ -9,9 +9,9 @@ if [[ -z `config-get hostname` ]]; then
 fi
 
 juju-log "Installing dependencies"
-apt-get -y install build-essential git imagemagick libmagickwand-dev nodejs libcurl4-openssl-dev libxml2-dev libxslt-dev libmysqlclient-dev apache2 redis-server
 apt-add-repository -y ppa:jaywink/curldebian
-apt-get update && apt-get -y upgrade
+apt-get update && apt-get -y dist-upgrade
+apt-get -y install build-essential git imagemagick libmagickwand-dev nodejs libcurl4-openssl-dev libxml2-dev libxslt-dev libmysqlclient-dev apache2 redis-server
 
 juju-log "Creating apache2 configuration"
 cat <<EOF > /etc/apache2/sites-available/diaspora
@@ -69,32 +69,28 @@ juju-log "Enable apache2 site"
 a2ensite diaspora
 
 juju-log "Adding diaspora user"
-adduser --quiet diaspora
-sudo -i -u diaspora
+useradd -m diaspora
+cd /home/diaspora/
 
 juju-log "Install RVM"
-curl -L dspr.tk/1t | bash
-echo '[[ -s "~/.rvm/scripts/rvm" ]] && source "~/.rvm/scripts/rvm"' >> ~/.bashrc
-source ~/.bashrc
+sudo -u diaspora -H bash -c "curl -L dspr.tk/1t | bash"
+echo '[[ -s "~/.rvm/scripts/rvm" ]] && source "~/.rvm/scripts/rvm"' >> /home/diaspora/.bashrc
 
 juju-log "Installing Ruby"
-rvm install 1.9.3-p484
+apt-get install -y gawk libreadline6-dev libyaml-dev libsqlite3-dev sqlite3 autoconf libgdbm-dev libncurses5-dev automake bison libffi-dev
+sudo -u diaspora -H bash -c "source /home/diaspora/.bashrc; /home/diaspora/.rvm/bin/rvm install 1.9.3-p484"
 
 juju-log "Check out diaspora source"
-cd ~
-git clone -b master git://github.com/diaspora/diaspora.git
+sudo -u diaspora -H bash -c "git clone -b `config-get branch` git://github.com/`config-get repository`.git diaspora"
 cd diaspora
-cp config/database.yml.example config/database.yml
-cp config/diaspora.yml.example config/diaspora.yml
 
-# TODO add configs
+juju-log "Setting configuration"
+sudo -u diaspora -H bash -c "cp config/database.yml.example config/database.yml"
+sudo -u diaspora -H bash -c "cp config/diaspora.yml.example config/diaspora.yml"
+sed --in-place "s|#url: \"https://example.org/\"|url: \"https://`config-get hostname`/\"|" config/diaspora.yml
+sed --in-place "s|#certificate_authorities: '/etc/ssl/certs/ca-certificates.crt'|certificate_authorities: '/etc/ssl/certs/ca-certificates.crt'|" config/diaspora.yml
+sed --in-place "s|#rails_environment: 'production'|rails_environment: 'production'|" config/diaspora.yml
+sed --in-place "s|#pod_name: \"Diaspora*\"|#pod_name: '`config-get podname`'|" config/diaspora.yml
 
 juju-log "Install ruby gems"
-RAILS_ENV=production  bundle install --without test development
-
-# TODO DB setup needs to be done in another hook
-#RAILS_ENV=production  bundle exec rake db:create db:schema:load
-
-# TODO precompile needs to be done in another hook
-#bundle exec rake assets:precompile
-
+sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use ruby-1.9.3-p484 && RAILS_ENV=production  bundle install --without test development"
