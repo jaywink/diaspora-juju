@@ -16,15 +16,20 @@ juju-log "Setting database credentials"
 sed --in-place "0,/host: \"localhost\"/{s/host: \"localhost\"/host: \"$db_host\"/}" /home/diaspora/diaspora/config/database.yml
 sed --in-place "0,/username: \"root\"/{s/username: \"root\"/username: \"$db_user\"/}" /home/diaspora/diaspora/config/database.yml
 sed --in-place "0,/password: \"\"/{s/password: \"\"/password: \"$db_pass\"/}" /home/diaspora/diaspora/config/database.yml
+sed --in-place "s/diaspora_production/$db_db/" /home/diaspora/diaspora/config/database.yml
 
-juju-log "Creating schema"
-# TODO create should happen only once.... :)
-sudo -i -u diaspora
+echo "DEBUG DB name is $db_db"
+
 cd /home/diaspora/diaspora
-RAILS_ENV=production  bundle exec rake db:create db:schema:load
+
+if [[ ! -e ".diaspora-db-setup-done" ]]; then
+    juju-log "Creating schema"
+    sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use ruby-1.9.3-p484 && RAILS_ENV=production  bundle exec rake db:schema:load"
+    touch .diaspora-db-setup-done
+fi
 
 juju-log "Precompiling assets"
-bundle exec rake assets:precompile
+sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use ruby-1.9.3-p484 && bundle exec rake assets:precompile"
 
 juju-log "Make the application port available, now that we know we have a site to expose"
 

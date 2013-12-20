@@ -3,13 +3,21 @@
 # Note that currently this is run directly after install
 # i.e. 'service apache2 start'
 
-set -e
+# set -e
+
+if [[ ! -e "/home/diaspora/diaspora/.diaspora-db-setup-done" ]]; then
+    juju-log "No database yet. Silently exiting"
+    exit 0
+fi
 
 service apache2 restart
 
-sudo -i -u diaspora
+## TODO kill existing server if it is running
 
-cd ~
-cd diaspora
-nohup ./script/server &
+cd /home/diaspora/diaspora
+juju-log "Running script/server"
+sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use ruby-1.9.3-p484 && nohup ./script/server &"
+sleep 10
+juju-log "Done"
+
 
