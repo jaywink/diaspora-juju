@@ -1,7 +1,19 @@
 #!/bin/bash
 # This will be run when the service is being torn down, allowing you to disable
 # it in various ways..
-# For example, if your web app uses a text file to signal to the load balancer
-# that it is live... you could remove it and sleep for a bit to allow the load
-# balancer to stop sending traffic.
-# rm /srv/webroot/server-live.txt && sleep 30
+
+juju-log "Killing existing running diaspora server"
+pkill -u diaspora
+pgrep -u diaspora
+c=1
+while [[ $? -eq 0 ]]; do
+    c=$(( $c + 1 ))
+    if [[ $c -gt 100 ]]; then
+        juju-log "Existing diaspora processes have not died after 200 seconds, exiting with error"
+        exit 1
+    fi
+    sleep 2
+    pgrep -u diaspora
+done
+
+exit 0

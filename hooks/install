@@ -8,56 +8,58 @@ if [[ -z `config-get hostname` ]]; then
     exit 1  
 fi
 
-juju-log "Installing dependencies"
+juju-log "Installing dependencies and upgrading system"
 apt-add-repository -y ppa:jaywink/curldebian
 apt-get update && apt-get -y dist-upgrade
 apt-get -y install build-essential git imagemagick libmagickwand-dev nodejs libcurl4-openssl-dev libxml2-dev libxslt-dev libmysqlclient-dev apache2 redis-server
 
-juju-log "Creating apache2 configuration"
-cat <<EOF > /etc/apache2/sites-available/diaspora
-<VirtualHost *:80>
-    ServerName `config-get hostname`
-    RedirectPermanent / https://`config-get hostname`/
-</VirtualHost>
-<VirtualHost *:443>
-    ServerName `config-get hostname`
-    DocumentRoot /home/diaspora/diaspora/public
-     
-    RewriteEngine On
-     
-    RewriteCond %{DOCUMENT_ROOT}/%{REQUEST_FILENAME} !-f
-    RewriteRule ^/(.*)$ balancer://upstream%{REQUEST_URI} [P,QSA,L]
-     
-    <Proxy balancer://upstream>
-        BalancerMember http://127.0.0.1:3000
-    </Proxy>
-     
-    ProxyRequests Off
-    ProxyVia On
-    ProxyPreserveHost On
-    RequestHeader set X_FORWARDED_PROTO https
-     
-    <Proxy *>
-        Order allow,deny
-        Allow from all
-    </Proxy>
-     
-    <Directory /home/diaspora/diaspora/public>
-        Allow from all
-        AllowOverride all
-        Options -MultiViews
-    </Directory>
-     
-    SSLEngine On
-	## TODO: allow user to specify certs in config
-    SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
-    SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
-    # maybe not needed, need for example for startssl to point to a local
-    # copy of http://www.startssl.com/certs/sub.class1.server.ca.pem
-	## TODO set this corrrectly
-    # SSLCertificateChainFile /etc/ssl/certs/sub.class1.server.ca.pem
-</VirtualHost>
+if [[ ! -e /etc/apache2/sites-available/diaspora ]]; then
+    juju-log "Creating apache2 configuration"
+    cat <<EOF > /etc/apache2/sites-available/diaspora
+    <VirtualHost *:80>
+        ServerName `config-get hostname`
+        RedirectPermanent / https://`config-get hostname`/
+    </VirtualHost>
+    <VirtualHost *:443>
+        ServerName `config-get hostname`
+        DocumentRoot /home/diaspora/diaspora/public
+         
+        RewriteEngine On
+         
+        RewriteCond %{DOCUMENT_ROOT}/%{REQUEST_FILENAME} !-f
+        RewriteRule ^/(.*)$ balancer://upstream%{REQUEST_URI} [P,QSA,L]
+         
+        <Proxy balancer://upstream>
+            BalancerMember http://127.0.0.1:3000
+        </Proxy>
+         
+        ProxyRequests Off
+        ProxyVia On
+        ProxyPreserveHost On
+        RequestHeader set X_FORWARDED_PROTO https
+         
+        <Proxy *>
+            Order allow,deny
+            Allow from all
+        </Proxy>
+         
+        <Directory /home/diaspora/diaspora/public>
+            Allow from all
+            AllowOverride all
+            Options -MultiViews
+        </Directory>
+         
+        SSLEngine On
+    	## TODO: allow user to specify certs in config
+        SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
+        SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+        # maybe not needed, need for example for startssl to point to a local
+        # copy of http://www.startssl.com/certs/sub.class1.server.ca.pem
+    	## TODO set this corrrectly
+        # SSLCertificateChainFile /etc/ssl/certs/sub.class1.server.ca.pem
+    </VirtualHost>
 EOF
+fi
 
 juju-log "Enable some apache2 mods"
 a2enmod ssl
@@ -70,29 +72,45 @@ a2enmod proxy_balancer
 juju-log "Enable apache2 site"
 a2ensite diaspora
 
-juju-log "Adding diaspora user"
-useradd -m diaspora
+if [[ ! -e /home/diaspora ]]; then
+    juju-log "Adding diaspora user"
+    useradd -m -s /bin/bash diaspora
+fi
+
 cd /home/diaspora/
 
-juju-log "Install RVM"
-sudo -u diaspora -H bash -c "curl -L dspr.tk/1t | bash"
-echo '[[ -s "~/.rvm/scripts/rvm" ]] && source "~/.rvm/scripts/rvm"' >> /home/diaspora/.bashrc
+## TODO: run rvm upgrade if existing?
+if [[ ! -e /home/diaspora/.rvm ]]; then
+    juju-log "Install RVM"
+    sudo -u diaspora -H bash -c "curl -L dspr.tk/1t | bash"
+    echo '[[ -s "~/.rvm/scripts/rvm" ]] && source "~/.rvm/scripts/rvm"' >> /home/diaspora/.bashrc
+fi
 
 juju-log "Installing Ruby"
 apt-get install -y gawk libreadline6-dev libyaml-dev libsqlite3-dev sqlite3 autoconf libgdbm-dev libncurses5-dev automake bison libffi-dev
 sudo -u diaspora -H bash -c "source /home/diaspora/.bashrc; /home/diaspora/.rvm/bin/rvm install 1.9.3-p484"
 
-juju-log "Check out diaspora source"
-sudo -u diaspora -H bash -c "git clone -b `config-get branch` git://github.com/`config-get repository`.git diaspora"
-cd diaspora
+if [[ ! -e /home/diaspora/diaspora ]]; then
+    juju-log "Check out diaspora source"
+    sudo -u diaspora -H bash -c "git clone -b `config-get branch` git://github.com/`config-get repository`.git diaspora"
+    cd diaspora
+else
+    cd diaspora
+    juju-log "Upgrading diaspora source"
+    sudo -u diaspora -H bash -c "git reset && git checkout . && git clean -fd && git checkout `config-get branch` && git pull origin `config-get branch`"
+fi
 
 juju-log "Setting configuration"
-sudo -u diaspora -H bash -c "cp config/database.yml.example config/database.yml"
-sudo -u diaspora -H bash -c "cp config/diaspora.yml.example config/diaspora.yml"
-sed --in-place "s|#url: \"https://example.org/\"|url: \"https://`config-get hostname`/\"|" config/diaspora.yml
-sed --in-place "s|#certificate_authorities: '/etc/ssl/certs/ca-certificates.crt'|certificate_authorities: '/etc/ssl/certs/ca-certificates.crt'|" config/diaspora.yml
-sed --in-place "s|#rails_environment: 'production'|rails_environment: 'production'|" config/diaspora.yml
-sed --in-place "s|#pod_name: \"Diaspora*\"|#pod_name: '`config-get podname`'|" config/diaspora.yml
+if [[ ! -e config/database.yml ]]; then
+    sudo -u diaspora -H bash -c "cp config/database.yml.example config/database.yml"
+fi
+if [[ ! -e config/diaspora.yml ]]; then
+    sudo -u diaspora -H bash -c "cp config/diaspora.yml.example config/diaspora.yml"
+    sed --in-place "s|#url: \"https://example.org/\"|url: \"https://`config-get hostname`/\"|" config/diaspora.yml
+    sed --in-place "s|#certificate_authorities: '/etc/ssl/certs/ca-certificates.crt'|certificate_authorities: '/etc/ssl/certs/ca-certificates.crt'|" config/diaspora.yml
+    sed --in-place "s|#rails_environment: 'production'|rails_environment: 'production'|" config/diaspora.yml
+    sed --in-place "s|#pod_name: \"Diaspora*\"|pod_name: '`config-get podname`'|" config/diaspora.yml
+fi
 
 juju-log "Install ruby gems"
 sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use ruby-1.9.3-p484 && RAILS_ENV=production  bundle install --without test development"

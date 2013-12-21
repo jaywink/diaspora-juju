@@ -4,3 +4,4 @@
 # Best practice suggests you execute the hooks/install and
 # hooks/config-changed to ensure all updates are processed
 
+$CHARM_DIR/hooks/install
