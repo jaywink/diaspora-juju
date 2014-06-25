@@ -16,7 +16,7 @@ service apache2 restart
 
 cd /home/diaspora/diaspora
 juju-log "Running script/server"
-sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use ruby-1.9.3-p484 && nohup ./script/server &"
+sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && nohup DB=postgres ./script/server &"
 sleep 10
 juju-log "Diaspora server has been started"
 

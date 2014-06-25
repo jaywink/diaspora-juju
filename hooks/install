@@ -9,13 +9,15 @@ if [[ -z `config-get hostname` ]]; then
 fi
 
 juju-log "Installing dependencies and upgrading system"
-apt-add-repository -y ppa:jaywink/curldebian
+# TODO: make this optional for precise only
+# apt-add-repository -y ppa:jaywink/curldebian
 apt-get update && apt-get -y dist-upgrade
-apt-get -y install build-essential git imagemagick libmagickwand-dev nodejs libcurl4-openssl-dev libxml2-dev libxslt-dev libmysqlclient-dev apache2 redis-server
+# TODO: make libmysqlclient-dev / libpq-dev choice depending on db, now just pgsql
+apt-get -y install build-essential git curl imagemagick libmagickwand-dev nodejs redis-server libcurl4-openssl-dev libxml2-dev libxslt-dev libpq-dev apache2
 
-if [[ ! -e /etc/apache2/sites-available/diaspora ]]; then
+if [[ ! -e /etc/apache2/sites-available/diaspora.conf ]]; then
     juju-log "Creating apache2 configuration"
-    cat <<EOF > /etc/apache2/sites-available/diaspora
+    cat <<EOF > /etc/apache2/sites-available/diaspora.conf
     <VirtualHost *:80>
         ServerName `config-get hostname`
         RedirectPermanent / https://`config-get hostname`/
@@ -50,16 +52,28 @@ if [[ ! -e /etc/apache2/sites-available/diaspora ]]; then
         </Directory>
          
         SSLEngine On
-    	## TODO: allow user to specify certs in config
-        SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
-        SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
-        # maybe not needed, need for example for startssl to point to a local
-        # copy of http://www.startssl.com/certs/sub.class1.server.ca.pem
-    	## TODO set this corrrectly
-        # SSLCertificateChainFile /etc/ssl/certs/sub.class1.server.ca.pem
+        SSLCertificateFile /etc/ssl/certs/diaspora.pem
+        SSLCertificateKeyFile /etc/ssl/private/diaspora.key
+        SSLCertificateChainFile /etc/ssl/certs/sub.class1.server.ca.pem
     </VirtualHost>
 EOF
 fi
+# SSL keys
+if [[ ! -z `config-get ssl_key` ]] && [[ ! -z `config-get ssl_key` ]]; then
+    juju-log "Saving SSL key and cert from config"
+    cat <<EOF > /etc/ssl/certs/diaspora.pem
+`get-config ssl_cert`
+EOF
+    cat <<EOF > /etc/ssl/private/diaspora.key
+`get-config ssl_key`
+EOF
+else
+    juju-log "Using default snakebite ssl keys - please set proper ones via config set"
+    cp /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/ssl/certs/diaspora.pem
+    cp /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/private/diaspora.key
+fi
+# TODO: should be configurable of course
+wget http://www.startssl.com/certs/sub.class1.server.ca.pem -O /etc/ssl/certs/sub.class1.server.ca.pem
 
 juju-log "Enable some apache2 mods"
 a2enmod ssl
@@ -88,7 +102,7 @@ fi
 
 juju-log "Installing Ruby"
 apt-get install -y gawk libreadline6-dev libyaml-dev libsqlite3-dev sqlite3 autoconf libgdbm-dev libncurses5-dev automake bison libffi-dev
-sudo -u diaspora -H bash -c "source /home/diaspora/.bashrc; /home/diaspora/.rvm/bin/rvm install 1.9.3-p484"
+sudo -u diaspora -H bash -c "source /home/diaspora/.bashrc; /home/diaspora/.rvm/bin/rvm install 2.0"
 
 if [[ ! -e /home/diaspora/diaspora ]]; then
     juju-log "Check out diaspora source"
@@ -101,9 +115,6 @@ else
 fi
 
 juju-log "Setting configuration"
-if [[ ! -e config/database.yml ]]; then
-    sudo -u diaspora -H bash -c "cp config/database.yml.example config/database.yml"
-fi
 if [[ ! -e config/diaspora.yml ]]; then
     sudo -u diaspora -H bash -c "cp config/diaspora.yml.example config/diaspora.yml"
     sed --in-place "s|#url: \"https://example.org/\"|url: \"https://`config-get hostname`/\"|" config/diaspora.yml
@@ -113,4 +124,4 @@ if [[ ! -e config/diaspora.yml ]]; then
 fi
 
 juju-log "Install ruby gems"
-sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use ruby-1.9.3-p484 && RAILS_ENV=production  bundle install --without test development"
+sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && RAILS_ENV=production DB=postgres bundle install --without heroku test development"

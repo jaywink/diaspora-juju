@@ -16,4 +16,4 @@ provides:
     interface: http
 requires:
   db:
-    interface: mysql
+    interface: pgsql

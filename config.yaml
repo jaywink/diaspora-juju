@@ -14,3 +14,9 @@ options:
     type: string
     default: Diaspora*
     description: "A name for the pod. The most difficult setting. Can be changed later."
+  ssl_key:
+    type: string
+    description: SSL private key for pod domain. See readme how to best use this configuration value. Must be unencrypted.
+  ssl_cert:
+    type: string
+    description: SSL cert for pod domain. See readme how to best use this configuration value.
