@@ -41,12 +41,11 @@ if [[ ! -e /etc/apache2/sites-available/diaspora.conf ]]; then
         RequestHeader set X_FORWARDED_PROTO https
          
         <Proxy *>
-            Order allow,deny
-            Allow from all
+            Require all granted
         </Proxy>
          
         <Directory /home/diaspora/diaspora/public>
-            Allow from all
+            Require all granted
             AllowOverride all
             Options -MultiViews
         </Directory>
@@ -82,6 +81,10 @@ a2enmod headers
 a2enmod proxy
 a2enmod proxy_http
 a2enmod proxy_balancer
+a2enmod lbmethod_byrequests
+
+juju-log "Disable default apache2 site"
+a2dissite 000-default
 
 juju-log "Enable apache2 site"
 a2ensite diaspora
@@ -107,12 +110,9 @@ sudo -u diaspora -H bash -c "source /home/diaspora/.bashrc; /home/diaspora/.rvm/
 if [[ ! -e /home/diaspora/diaspora ]]; then
     juju-log "Check out diaspora source"
     sudo -u diaspora -H bash -c "git clone -b `config-get branch` git://github.com/`config-get repository`.git diaspora"
-    cd diaspora
-else
-    cd diaspora
-    juju-log "Upgrading diaspora source"
-    sudo -u diaspora -H bash -c "git reset && git checkout . && git clean -fd && git checkout `config-get branch` && git pull origin `config-get branch`"
 fi
+
+cd diaspora
 
 juju-log "Setting configuration"
 if [[ ! -e config/diaspora.yml ]]; then

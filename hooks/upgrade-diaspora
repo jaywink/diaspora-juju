@@ -1,0 +1,27 @@
+#!/bin/bash
+
+set -e
+
+$CHARM_DIR/hooks/stop
+
+cd /home/diaspora/diaspora
+
+juju-log "Upgrading diaspora source"
+if [[ -e ".diaspora-db-setup-done" ]]; then
+    db_setup_done=yes
+fi
+sudo -u diaspora -H bash -c "git reset && git checkout . && git clean -fd && git checkout `config-get branch` && git pull origin `config-get branch`"
+if [[ ! -z $db_setup_done ]]; then
+    touch .diaspora-db-setup-done
+fi
+
+juju-log "Upgrade ruby gems"
+sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && RAILS_ENV=production DB=postgres bundle install --without heroku test development"
+
+juju-log "Running database migrate"
+sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && RAILS_ENV=production DB=postgres bundle exec rake db:migrate"
+
+juju-log "Precompiling assets"
+sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && DB=postgres bundle exec rake assets:precompile"
+
+$CHARM_DIR/hooks/start

@@ -5,19 +5,17 @@
 
 set -e
 
-if [[ ! -e "/home/diaspora/.diaspora-db-setup-done" ]]; then
+if [[ ! -e "/home/diaspora/diaspora/.diaspora-db-setup-done" ]]; then
     juju-log "No database yet. Silently exiting"
     exit 0
 fi
 
-$CHARM_DIR/hooks/stop
+# Make sure we always use latest init
+cp $CHARM_DIR/init/diaspora.conf /etc/init/diaspora.conf
 
 service apache2 restart
+service diaspora restart
 
-cd /home/diaspora/diaspora
-juju-log "Running script/server"
-sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && nohup DB=postgres ./script/server &"
-sleep 10
 juju-log "Diaspora server has been started"
 
 exit 0

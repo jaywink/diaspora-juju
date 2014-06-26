@@ -2,18 +2,10 @@
 # This will be run when the service is being torn down, allowing you to disable
 # it in various ways..
 
-juju-log "Killing existing running diaspora server"
-pkill -u diaspora
-pgrep -u diaspora
-c=1
-while [[ $? -eq 0 ]]; do
-    c=$(( $c + 1 ))
-    if [[ $c -gt 100 ]]; then
-        juju-log "Existing diaspora processes have not died after 200 seconds, exiting with error"
-        exit 1
-    fi
-    sleep 2
-    pgrep -u diaspora
-done
+set -e
+
+juju-log "Stopping diaspora* server"
+
+service diaspora stop
 
 exit 0
