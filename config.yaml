@@ -20,3 +20,7 @@ options:
   ssl_cert:
     type: string
     description: SSL cert for pod domain. See readme how to best use this configuration value.
+  ssl_snakebite:
+    type: boolean
+    description: "If ssl_cert and ssl_key not set, shall we use the snakebite cert?"
+    default: true

@@ -15,80 +15,6 @@ apt-get update && apt-get -y dist-upgrade
 # TODO: make libmysqlclient-dev / libpq-dev choice depending on db, now just pgsql
 apt-get -y install build-essential git curl imagemagick libmagickwand-dev nodejs redis-server libcurl4-openssl-dev libxml2-dev libxslt-dev libpq-dev apache2
 
-if [[ ! -e /etc/apache2/sites-available/diaspora.conf ]]; then
-    juju-log "Creating apache2 configuration"
-    cat <<EOF > /etc/apache2/sites-available/diaspora.conf
-    <VirtualHost *:80>
-        ServerName `config-get hostname`
-        RedirectPermanent / https://`config-get hostname`/
-    </VirtualHost>
-    <VirtualHost *:443>
-        ServerName `config-get hostname`
-        DocumentRoot /home/diaspora/diaspora/public
-         
-        RewriteEngine On
-         
-        RewriteCond %{DOCUMENT_ROOT}/%{REQUEST_FILENAME} !-f
-        RewriteRule ^/(.*)$ balancer://upstream%{REQUEST_URI} [P,QSA,L]
-         
-        <Proxy balancer://upstream>
-            BalancerMember http://127.0.0.1:3000
-        </Proxy>
-         
-        ProxyRequests Off
-        ProxyVia On
-        ProxyPreserveHost On
-        RequestHeader set X_FORWARDED_PROTO https
-         
-        <Proxy *>
-            Require all granted
-        </Proxy>
-         
-        <Directory /home/diaspora/diaspora/public>
-            Require all granted
-            AllowOverride all
-            Options -MultiViews
-        </Directory>
-         
-        SSLEngine On
-        SSLCertificateFile /etc/ssl/certs/diaspora.pem
-        SSLCertificateKeyFile /etc/ssl/private/diaspora.key
-        SSLCertificateChainFile /etc/ssl/certs/sub.class1.server.ca.pem
-    </VirtualHost>
-EOF
-fi
-# SSL keys
-if [[ ! -z `config-get ssl_key` ]] && [[ ! -z `config-get ssl_key` ]]; then
-    juju-log "Saving SSL key and cert from config"
-    cat <<EOF > /etc/ssl/certs/diaspora.pem
-`get-config ssl_cert`
-EOF
-    cat <<EOF > /etc/ssl/private/diaspora.key
-`get-config ssl_key`
-EOF
-else
-    juju-log "Using default snakebite ssl keys - please set proper ones via config set"
-    cp /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/ssl/certs/diaspora.pem
-    cp /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/private/diaspora.key
-fi
-# TODO: should be configurable of course
-wget http://www.startssl.com/certs/sub.class1.server.ca.pem -O /etc/ssl/certs/sub.class1.server.ca.pem
-
-juju-log "Enable some apache2 mods"
-a2enmod ssl
-a2enmod rewrite
-a2enmod headers
-a2enmod proxy
-a2enmod proxy_http
-a2enmod proxy_balancer
-a2enmod lbmethod_byrequests
-
-juju-log "Disable default apache2 site"
-a2dissite 000-default
-
-juju-log "Enable apache2 site"
-a2ensite diaspora
-
 if [[ ! -e /home/diaspora ]]; then
     juju-log "Adding diaspora user"
     useradd -m -s /bin/bash diaspora
@@ -107,21 +33,4 @@ juju-log "Installing Ruby"
 apt-get install -y gawk libreadline6-dev libyaml-dev libsqlite3-dev sqlite3 autoconf libgdbm-dev libncurses5-dev automake bison libffi-dev
 sudo -u diaspora -H bash -c "source /home/diaspora/.bashrc; /home/diaspora/.rvm/bin/rvm install 2.0"
 
-if [[ ! -e /home/diaspora/diaspora ]]; then
-    juju-log "Check out diaspora source"
-    sudo -u diaspora -H bash -c "git clone -b `config-get branch` git://github.com/`config-get repository`.git diaspora"
-fi
-
-cd diaspora
-
-juju-log "Setting configuration"
-if [[ ! -e config/diaspora.yml ]]; then
-    sudo -u diaspora -H bash -c "cp config/diaspora.yml.example config/diaspora.yml"
-    sed --in-place "s|#url: \"https://example.org/\"|url: \"https://`config-get hostname`/\"|" config/diaspora.yml
-    sed --in-place "s|#certificate_authorities: '/etc/ssl/certs/ca-certificates.crt'|certificate_authorities: '/etc/ssl/certs/ca-certificates.crt'|" config/diaspora.yml
-    sed --in-place "s|#rails_environment: 'production'|rails_environment: 'production'|" config/diaspora.yml
-    sed --in-place "s|#pod_name: \"Diaspora*\"|pod_name: '`config-get podname`'|" config/diaspora.yml
-fi
-
-juju-log "Install ruby gems"
-sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && RAILS_ENV=production DB=postgres bundle install --without heroku test development"
+$CHARM_DIR/hooks/upgrade-diaspora

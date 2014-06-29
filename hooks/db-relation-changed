@@ -30,17 +30,7 @@ sed --in-place "s/password:/password: \"$db_pass\"/" /home/diaspora/diaspora/con
 sed --in-place "s/diaspora_production/$db_db/" /home/diaspora/diaspora/config/database.yml
 
 juju-log "DB name is $db_db"
+touch /home/diaspora/diaspora/.db-available
 
-if [[ ! -e ".diaspora-db-setup-done" ]]; then
-    juju-log "Creating schema"
-    sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && RAILS_ENV=production DB=postgres bundle exec rake db:schema:load"
-    touch .diaspora-db-setup-done 
-fi
-
-juju-log "Precompiling assets"
-sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && DB=postgres bundle exec rake assets:precompile"
-
-juju-log "Make the application port available, now that we know we have a site to expose"
-
-open-port 80
-open-port 443
+juju-log "Launching diaspora upgrade"
+$CHARM_DIR/hooks/upgrade-diaspora

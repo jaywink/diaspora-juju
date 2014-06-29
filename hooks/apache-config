@@ -1,0 +1,80 @@
+#!/bin/bash
+
+set -e
+
+juju-log "Creating apache2 configuration"
+cat <<EOF > /etc/apache2/sites-available/diaspora.conf
+<VirtualHost *:80>
+    ServerName `config-get hostname`
+    RedirectPermanent / https://`config-get hostname`/
+</VirtualHost>
+<VirtualHost *:443>
+    ServerName `config-get hostname`
+    DocumentRoot /home/diaspora/diaspora/public
+     
+    RewriteEngine On
+     
+    RewriteCond %{DOCUMENT_ROOT}/%{REQUEST_FILENAME} !-f
+    RewriteRule ^/(.*)$ balancer://upstream%{REQUEST_URI} [P,QSA,L]
+     
+    <Proxy balancer://upstream>
+        BalancerMember http://127.0.0.1:3000
+    </Proxy>
+     
+    ProxyRequests Off
+    ProxyVia On
+    ProxyPreserveHost On
+    RequestHeader set X_FORWARDED_PROTO https
+     
+    <Proxy *>
+        Require all granted
+    </Proxy>
+     
+    <Directory /home/diaspora/diaspora/public>
+        Require all granted
+        AllowOverride all
+        Options -MultiViews
+    </Directory>
+     
+    SSLEngine On
+    SSLCertificateFile /etc/ssl/certs/diaspora.pem
+    SSLCertificateKeyFile /etc/ssl/private/diaspora.key
+    SSLCertificateChainFile /etc/ssl/certs/sub.class1.server.ca.pem
+</VirtualHost>
+EOF
+
+# SSL keys
+if [[ ! -z `config-get ssl_key` ]] && [[ ! -z `config-get ssl_cert` ]]; then
+    juju-log "Saving SSL key and cert from config"
+    cat <<EOF > /etc/ssl/certs/diaspora.pem
+`config-get ssl_cert | base64 -d`
+EOF
+    cat <<EOF > /etc/ssl/private/diaspora.key
+`config-get ssl_key | base64 -d`
+EOF
+else
+    if [[ `config-get ssl_snakebite` == "True" ]]; then
+        juju-log "Using default snakebite ssl keys"
+        cp /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/ssl/certs/diaspora.pem
+        cp /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/private/diaspora.key
+    else
+        juju-log "Not setting any SSL certs. Please either upload them via juju scp or set ssh_snakebite to True"
+    fi
+fi
+# TODO: should be configurable of course
+wget http://www.startssl.com/certs/sub.class1.server.ca.pem -O /etc/ssl/certs/sub.class1.server.ca.pem
+
+juju-log "Enable some apache2 mods"
+a2enmod ssl
+a2enmod rewrite
+a2enmod headers
+a2enmod proxy
+a2enmod proxy_http
+a2enmod proxy_balancer
+a2enmod lbmethod_byrequests
+
+juju-log "Disable default apache2 site"
+a2dissite 000-default
+
+juju-log "Enable apache2 site"
+a2ensite diaspora

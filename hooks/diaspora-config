@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+
+juju-log "Setting configuration"
+cd /home/diaspora/diaspora
+sudo -u diaspora -H bash -c "cp config/diaspora.yml.example config/diaspora.yml"
+sed --in-place "s|#url: \"https://example.org/\"|url: \"https://`config-get hostname`/\"|" config/diaspora.yml
+sed --in-place "s|#certificate_authorities: '/etc/ssl/certs/ca-certificates.crt'|certificate_authorities: '/etc/ssl/certs/ca-certificates.crt'|" config/diaspora.yml
+sed --in-place "s|#rails_environment: 'production'|rails_environment: 'production'|" config/diaspora.yml
+sed --in-place "s|#pod_name: \"Diaspora*\"|pod_name: '`config-get podname`'|" config/diaspora.yml
+

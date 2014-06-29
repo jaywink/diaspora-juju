@@ -1,4 +1,7 @@
 #!/bin/bash
 # config-changed occurs everytime a new configuration value is updated (juju set)
 
-$CHARM_DIR/hooks/start
+set -e
+
+$CHARM_DIR/hooks/apache-config
+$CHARM_DIR/hooks/diaspora-config
