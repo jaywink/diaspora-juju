@@ -84,6 +84,8 @@ To upgrade the diaspora* instance, you can use the following command:
 
 Currently this charm supports only the PostgreSQL and Apache combination.
 
+This charm is currently for Ubuntu 14.04 (Trusty) only.
+
 # Contact Information
 
 This charm is not officially supported by the [diaspora* project](http://diasporafoundation.org).
