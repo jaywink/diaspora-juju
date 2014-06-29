@@ -86,6 +86,8 @@ Currently this charm supports only the PostgreSQL and Apache combination.
 
 This charm is currently for Ubuntu 14.04 (Trusty) only.
 
+Running several units at the same time has not been tested by the charm author.
+
 # Contact Information
 
 This charm is not officially supported by the [diaspora* project](http://diasporafoundation.org).

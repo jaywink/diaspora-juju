@@ -1,12 +1,12 @@
 name: diaspora
-summary: Juju charm to set up a personal diaspora pod
+summary: Juju charm to set up a personal diaspora* pod
 maintainer: Jason Robinson <mail@jasonrobinson.me>
 description: |
-  Diaspora, the privacy aware, personally controlled, do-it-all,
-  open source social network, is a dicentralized social network
+  diaspora*, the privacy aware, personally controlled, do-it-all,
+  open source social network, is a decentralized social network
   that puts you in control of you own data. When you set up a
   personal pod, all your data is stored in that pod. You maintain
-  ownership of everything you share on Diaspora, giving you full
+  ownership of everything you share on diaspora*, giving you full
   control over how it's distributed.
 categories:
   - applications
