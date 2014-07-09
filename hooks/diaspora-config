@@ -4,9 +4,29 @@ set -e
 
 juju-log "Setting configuration"
 cd /home/diaspora/diaspora
-sudo -u diaspora -H bash -c "cp config/diaspora.yml.example config/diaspora.yml"
-sed --in-place "s|#url: \"https://example.org/\"|url: \"https://`config-get hostname`/\"|" config/diaspora.yml
-sed --in-place "s|#certificate_authorities: '/etc/ssl/certs/ca-certificates.crt'|certificate_authorities: '/etc/ssl/certs/ca-certificates.crt'|" config/diaspora.yml
-sed --in-place "s|#rails_environment: 'production'|rails_environment: 'production'|" config/diaspora.yml
-sed --in-place "s|#pod_name: \"Diaspora*\"|pod_name: '`config-get podname`'|" config/diaspora.yml
 
+# a file is needed even if we don't use it
+if [[ ! -e /home/diaspora/diaspora/config/diaspora.yml ]]; then
+    sudo -u diaspora -H bash -c "cp config/diaspora.yml.example config/diaspora.yml"
+fi
+
+cat <<EOF > /home/diaspora/.diaspora_config
+export ENVIRONMENT_URL='https://`config-get hostname`'
+export ENVIRONMENT_CERTIFICATE_AUTHORITIES='/etc/ssl/certs/ca-certificates.crt'
+export SERVER_RAILS_ENVIRONMENT='production'
+export SETTINGS_POD_NAME='`config-get podname`'
+export MAIL_ENABLE=true
+export MAIL_SENDER_ADDRESS='no-reply@`config-get hostname`'
+export MAIL_METHOD=sendmail
+EOF
+
+if [[ `config-get statistics` == 'true' ]]; then
+    echo "export PRIVACY_STATISTICS_USER_COUNTS=true"  >> /home/diaspora/.diaspora_config
+    echo "export PRIVACY_STATISTICS_POST_COUNTS=true"  >> /home/diaspora/.diaspora_config
+    echo "export PRIVACY_STATISTICS_COMMENT_COUNTS=true"  >> /home/diaspora/.diaspora_config
+fi
+
+# 'install' config if needed
+if [[ `grep -c diaspora_config /home/diaspora/.bash_profile` -eq 0 ]]; then
+    echo 'source /home/diaspora/.diaspora_config' >> /home/diaspora/.bash_profile
+fi

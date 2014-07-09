@@ -24,3 +24,7 @@ options:
     type: boolean
     description: "If ssl_cert and ssl_key not set, shall we use the snakebite cert?"
     default: true
+  statistics:
+    type: boolean
+    description: "Enable statistics from the pod? This includes user and post counts. Statistics will be exposed at /statistics.json"
+    default: false
