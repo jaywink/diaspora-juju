@@ -2,8 +2,6 @@
 # This will be run when the service is being torn down, allowing you to disable
 # it in various ways..
 
-set -e
-
 juju-log "Stopping diaspora* server"
 
 service diaspora stop
