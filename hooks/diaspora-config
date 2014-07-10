@@ -15,6 +15,7 @@ export ENVIRONMENT_URL='https://`config-get hostname`'
 export ENVIRONMENT_CERTIFICATE_AUTHORITIES='/etc/ssl/certs/ca-certificates.crt'
 export SERVER_RAILS_ENVIRONMENT='production'
 export SETTINGS_POD_NAME='`config-get podname`'
+export SETTINGS_ENABLE_REGISTRATIONS='`config-get enable_registrations`'
 export MAIL_ENABLE=true
 export MAIL_SENDER_ADDRESS='no-reply@`config-get hostname`'
 export MAIL_METHOD=sendmail
@@ -25,6 +26,36 @@ if [[ `config-get statistics` == 'true' ]]; then
     echo "export PRIVACY_STATISTICS_POST_COUNTS=true"  >> /home/diaspora/.diaspora_config
     echo "export PRIVACY_STATISTICS_COMMENT_COUNTS=true"  >> /home/diaspora/.diaspora_config
 fi
+
+if [[ ! -z `config-get bitcoin_address` ]]; then
+    echo "export SETTINGS_BITCOIN_ADDRESS='`config-get bitcoin_address`'" >> /home/diaspora/.diaspora_config
+fi
+
+if [[ ! -z `config-get facebook_app_id` ]]; then
+    echo "export SERVICES_FACEBOOK_ENABLE=true" >> /home/diaspora/.diaspora_config
+    echo "export SERVICES_FACEBOOK_APP_ID='`config-get facebook_app_id`'" >> /home/diaspora/.diaspora_config
+    echo "export SERVICES_FACEBOOK_SECRET='`config-get facebook_app_secret`'" >> /home/diaspora/.diaspora_config
+fi
+
+if [[ ! -z `config-get twitter_key` ]]; then
+    echo "export SERVICES_TWITTER_ENABLE=true" >> /home/diaspora/.diaspora_config
+    echo "export SERVICES_TWITTER_APP_ID='`config-get twitter_key`'" >> /home/diaspora/.diaspora_config
+    echo "export SERVICES_TWITTER_SECRET='`config-get twitter_secret`'" >> /home/diaspora/.diaspora_config
+fi
+
+if [[ ! -z `config-get tumblr_key` ]]; then
+    echo "export SERVICES_TUMBLR_ENABLE=true" >> /home/diaspora/.diaspora_config
+    echo "export SERVICES_TUMBLR_APP_ID='`config-get tumblr_key`'" >> /home/diaspora/.diaspora_config
+    echo "export SERVICES_TUMBLR_SECRET='`config-get tumblr_secret`'" >> /home/diaspora/.diaspora_config
+fi
+
+if [[ ! -z `config-get admin_account` ]]; then
+    echo "export ADMINS_ACCOUNT='`config-get admin_account`'" >> /home/diaspora/.diaspora_config
+fi
+if [[ ! -z `config-get admin_email` ]]; then
+    echo "export ADMINS_PODMIN_EMAIL='`config-get admin_email`'" >> /home/diaspora/.diaspora_config
+fi
+
 
 # 'install' config if needed
 if [[ `grep -c diaspora_config /home/diaspora/.bash_profile` -eq 0 ]]; then

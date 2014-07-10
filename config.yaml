@@ -28,3 +28,35 @@ options:
     type: boolean
     description: "Enable statistics from the pod? This includes user and post counts. Statistics will be exposed at /statistics.json"
     default: false
+  enable_registrations:
+    type: boolean
+    description: "Enable new users to create accounts."
+    default: true
+  bitcoin_address:
+    type: string
+    description: "Bitcoin address for donations."
+  facebook_app_id:
+    type: string
+    description: "Facebook app id for services integration."
+  facebook_app_secret:
+    type: string
+    description: "Facebook app secret if ID given."
+  twitter_key:
+    type: string
+    description: "Twitter key for services integration."
+  twitter_secret:
+    type: string
+    description: "Twitter secret if key given."
+  tumblr_key:
+    type: string
+    description: "Tumblr key for services integration."
+  tumblr_secret:
+    type: string
+    description: "Tumblr secret if ID given."
+  admin_account:
+    type: string
+    description: "Once created, set admin account username here."
+  admin_email:
+    type: string
+    description: "Set pod administrator email here."
+    
