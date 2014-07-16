@@ -2,6 +2,7 @@ options:
   hostname:
     type: string
     description: "Hostname for the server"
+    default: ""
   repository:
     type: string
     default: diaspora/diaspora
@@ -17,9 +18,11 @@ options:
   ssl_key:
     type: string
     description: SSL private key for pod domain. See readme how to best use this configuration value. Must be unencrypted.
+    default: ""
   ssl_cert:
     type: string
     description: SSL cert for pod domain. See readme how to best use this configuration value.
+    default: ""
   ssl_snakebite:
     type: boolean
     description: "If ssl_cert and ssl_key not set, shall we use the snakebite cert?"
@@ -35,28 +38,37 @@ options:
   bitcoin_address:
     type: string
     description: "Bitcoin address for donations."
+    default: ""
   facebook_app_id:
     type: string
     description: "Facebook app id for services integration."
+    default: ""
   facebook_app_secret:
     type: string
     description: "Facebook app secret if ID given."
+    default: ""
   twitter_key:
     type: string
     description: "Twitter key for services integration."
+    default: ""
   twitter_secret:
     type: string
     description: "Twitter secret if key given."
+    default: ""
   tumblr_key:
     type: string
     description: "Tumblr key for services integration."
+    default: ""
   tumblr_secret:
     type: string
     description: "Tumblr secret if ID given."
+    default: ""
   admin_account:
     type: string
     description: "Once created, set admin account username here."
+    default: ""
   admin_email:
     type: string
     description: "Set pod administrator email here."
+    default: ""
     
