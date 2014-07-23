@@ -1,67 +1,81 @@
 options:
   hostname:
     type: string
-    description: "Hostname for the server"
+    description: Hostname for the server
     default: ""
   repository:
     type: string
     default: diaspora/diaspora
-    description: "Repository to use. Does not normally need to be changed."
+    description: Repository to use. Does not normally need to be changed.
   branch:
     type: string
     default: master
-    description: "Branch to use. Does not normally need to be changed."
+    description: Branch to use. Does not normally need to be changed.
   podname:
     type: string
     default: diaspora*
-    description: "A name for the pod. The most difficult setting. Can be changed later."
+    description: |
+      A name for the pod. The most difficult setting. Can be changed later.
   ssl_key:
     type: string
-    description: SSL private key for pod domain. See readme how to best use this configuration value. Must be unencrypted.
+    description: |
+      SSL private key for pod domain. See readme how to best use this
+      configuration value. Must be unencrypted.
     default: ""
   ssl_cert:
     type: string
-    description: SSL cert for pod domain. See readme how to best use this configuration value.
+    description: |
+      SSL cert for pod domain. See readme how to best use this
+      configuration value.
     default: ""
   ssl_snakebite:
     type: boolean
-    description: "If ssl_cert and ssl_key not set, shall we use the snakebite cert?"
+    description: |
+      If you don't set 'ssl_key' and 'ssl_cert', by default the
+      default snakebite self-signed certifications will be used until a proper
+      cert is set. Set this to false once you transfer the cert manually 
+      to the server.
+      Note! diaspora* requires a valid SSL certificate for federation. 
+      Running a production real diaspora* pod using snakebite certs 
+      is **not** possible.
     default: true
   statistics:
     type: boolean
-    description: "Enable statistics from the pod? This includes user and post counts. Statistics will be exposed at /statistics.json"
+    description: |
+      Enable statistics from the pod? This includes user and post counts.
+      Statistics will be exposed at /statistics.json
     default: false
   enable_registrations:
     type: boolean
-    description: "Enable new users to create accounts."
+    description: Enable new users to create accounts.
     default: true
   bitcoin_address:
     type: string
-    description: "Bitcoin address for donations."
+    description: Bitcoin address for donations.
     default: ""
   facebook_app_id:
     type: string
-    description: "Facebook app id for services integration."
+    description: Facebook app id for services integration.
     default: ""
   facebook_app_secret:
     type: string
-    description: "Facebook app secret if ID given."
+    description: Facebook app secret if ID given.
     default: ""
   twitter_key:
     type: string
-    description: "Twitter key for services integration."
+    description: Twitter key for services integration.
     default: ""
   twitter_secret:
     type: string
-    description: "Twitter secret if key given."
+    description: Twitter secret if key given.
     default: ""
   tumblr_key:
     type: string
-    description: "Tumblr key for services integration."
+    description: Tumblr key for services integration.
     default: ""
   tumblr_secret:
     type: string
-    description: "Tumblr secret if ID given."
+    description: Tumblr secret if ID given.
     default: ""
   admin_account:
     type: string
@@ -69,6 +83,6 @@ options:
     default: ""
   admin_email:
     type: string
-    description: "Set pod administrator email here."
+    description: Set pod administrator email here.
     default: ""
     
