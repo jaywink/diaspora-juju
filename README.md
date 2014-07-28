@@ -12,6 +12,10 @@ To set the hostname, you will need to create a configuration file. At minimum
 it needs the host name setting, but you can configure other parts of the charm 
 at the same time.
 
+Note! While the hostname can be set after the initial deploy command - the
+application will not be fully configured until a hostname is provided,
+so it is wise to create a configuration file for the initial deploy command.
+
 To deploy (from the Juju Charm store, once this lands there):
 
     juju deploy --config=<path to config> diaspora
@@ -21,18 +25,27 @@ do this first create a path `charms/trusty` somewhere. Change to that path and
 clone this repository. Create the config file and then:
 
     juju deploy --config=<path to config> --repository=<path to charms/>
-    local:diaspora
+    local:trusty/diaspora
 
 If you don't already have one, you also need to deploy a database:
 
     juju deploy postgresql
 
 Currently Apache and Redis are installed inside the diaspora* container though
-this will likely change.
+this will possible change.
 
 Once services are deployed, create a relation with the database:
 
     juju add-relation postgresql:db diaspora:db
+
+This will then trigger the actual building of the application - as it cannot
+be fully completed without a database.
+
+**Important!** Please note diaspora* takes a very long time to install, due to
+the many Ruby gems that need to be pulled in. Depending on machine, this could
+be from 5 to 30 minutes. Use `juju debug-log` to see the current progress. When
+it is ready you will see `Starting diaspora* server` in the log as one of the
+final lines.
 
 After everything is installed, you can expose:
 
@@ -148,7 +161,7 @@ To upgrade the diaspora* instance, you can use the following command:
 
 Currently this charm supports only the PostgreSQL and Apache combination.
 
-This charm is currently for Ubuntu 14.04 (Trusty) only.
+This charm is currently for Ubuntu 14.04 (Trusty) targets only.
 
 Running several units at the same time has not been tested by the charm author.
 
@@ -170,6 +183,9 @@ Contact the charm author;
 
 Please file bugs on [GitHub](https://github.com/jaywink/diaspora-juju). Pull
 requests also welcome!
+
+This charm is also on [Launchpad](https://launchpad.net/diaspora-juju),
+code will be synced there from GitHub.
 
 # License
 
