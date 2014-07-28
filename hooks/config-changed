@@ -3,5 +3,19 @@
 
 set -e
 
+# check some configs
+if [[ -z `config-get hostname` ]]; then
+    juju-log "Hostname needs to be specified in charm config. Silently exiting."
+    exit 0
+fi
+
 $CHARM_DIR/hooks/apache-config
-$CHARM_DIR/hooks/diaspora-config
+
+# if we have not already triggered upgrade-diaspora
+# which retrieves the source, we trigger it here
+# it will trigger diaspora-config
+if [[ ! -e /home/diaspora/diaspora ]]; then
+    $CHARM_DIR/hooks/upgrade-diaspora
+else
+    $CHARM_DIR/hooks/diaspora-config
+fi

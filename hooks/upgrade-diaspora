@@ -2,6 +2,12 @@
 
 set -e
 
+# check some configs
+if [[ -z `config-get hostname` ]]; then
+    juju-log "Hostname needs to be specified in charm config. Silently exiting."
+    exit 0
+fi
+
 if [[ ! -e /home/diaspora/diaspora ]]; then
     juju-log "Check out diaspora source"
     cd /home/diaspora
@@ -34,7 +40,7 @@ sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 
 if [[ -z $db_setup_done ]]; then
     juju-log "Creating schema"
     sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && RAILS_ENV=production DB=postgres bundle exec rake db:schema:load"
-    touch .diaspora-db-setup-done 
+    touch .diaspora-db-setup-done
 else
     $CHARM_DIR/hooks/stop
     juju-log "Running database migrate"

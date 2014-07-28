@@ -1,12 +1,6 @@
 #!/bin/bash
 
-set -e 
-
-# check some configs
-if [[ -z `config-get hostname` ]]; then
-    juju-log "Hostname needs to be specified in charm config!"
-    exit 1  
-fi
+set -e
 
 juju-log "Installing dependencies and upgrading system"
 # TODO: make this optional for precise only

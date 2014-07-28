@@ -2,6 +2,12 @@
 
 set -e
 
+# check some configs
+if [[ -z `config-get hostname` ]]; then
+    juju-log "Hostname needs to be specified in charm config. Silently exiting."
+    exit 0
+fi
+
 juju-log "Setting configuration"
 cd /home/diaspora/diaspora
 
