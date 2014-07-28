@@ -159,11 +159,13 @@ To upgrade the diaspora* instance, you can use the following command:
 
 ## Known Limitations and Issues
 
-Currently this charm supports only the PostgreSQL and Apache combination.
-
-This charm is currently for Ubuntu 14.04 (Trusty) targets only.
-
-Running several units at the same time has not been tested by the charm author.
+* Currently this charm supports only the PostgreSQL and Apache combination.
+* This charm is currently for Ubuntu 14.04 (Trusty) targets only.
+* Running several units at the same time has not been tested by the charm
+  author.
+* Currently after destroying the diaspora service, the postgresql service
+  also needs to be destroyed - otherwise db setup will fail.
+  Issue tracked [here](https://github.com/jaywink/diaspora-juju/issues/8).
 
 # Contact Information
 
