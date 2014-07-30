@@ -5,6 +5,8 @@ http://diasporafoundation.org
 
 # Usage
 
+## diaspora* service
+
 To install diaspora*, you will need to know the hostname that will be used.
 Think carefully before installing, as this cannot be changed after installation.
 
@@ -27,16 +29,40 @@ clone this repository. Create the config file and then:
     juju deploy --config=<path to config> --repository=<path to charms/>
     local:trusty/diaspora
 
-If you don't already have one, you also need to deploy a database:
-
-    juju deploy postgresql
-
 Currently Apache and Redis are installed inside the diaspora* container though
 this will possible change.
 
+## Database
+
+If you don't already have one, you also need to deploy a database. First, make sure your database has enough storage space. If needed, deploy `block-storage-broker` to handle that part (OpenStack or EC2 only). It makes sense to deploy this to machine 0 (the Juju state machine). If you want the DB also on the state machine, add `--to 0` to that command too. If you have enough HD on the instance running the DB, skip the rest of this section and just do `juju deploy postgresql`.
+
+Unfortunately, currently the `block-storage-broker` charm doesn't work for `trusty` - but I pulled a branch together combining fixes from the `precise` branch. To use that, you need [Bazaar](https://help.ubuntu.com/14.04/serverguide/bazaar.html) installed, then in a suitable working path:
+
+    mkdir trusty
+    bzr branch lp:~jaywink/charms/trusty/block-storage-broker/fix-for-trusty trusty/block-storage-broker
+
+Create a config file [specifying the necessary](https://jujucharms.com/~lazypower/trusty/block-storage-broker-0/?text=block-storage-broker#configuration) authorization details and then
+
+    juju deploy --repository=<path to working dir> local:trusty/block-storage-broker --to=0 --config=<path to config file> 
+
+Deploy `storage` (to handle actual postgresql data routing to volumes):
+
+    juju deploy ~lazypower/trusty/storage-0
+
+Then, deploy the database:
+
+    juju deploy postgresql
+    juju add-relation postgresql storage
+    juju add-relation storage block-storage-broker
+    juju set storage provider=block-storage-broker
+
+In theory you should soon get a volume attached to the postgresql machine automatically. If this does not happen, check `juju debug-log`.
+
+## Finish install
+
 Once services are deployed, create a relation with the database:
 
-    juju add-relation postgresql:db diaspora:db
+    juju add-relation postgresql:db-admin diaspora:db
 
 This will then trigger the actual building of the application - as it cannot
 be fully completed without a database.
@@ -46,6 +72,8 @@ the many Ruby gems that need to be pulled in. Depending on machine, this could
 be from 5 to 30 minutes. Use `juju debug-log` to see the current progress. When
 it is ready you will see `Starting diaspora* server` in the log as one of the
 final lines.
+
+## Expose service
 
 After everything is installed, you can expose:
 
