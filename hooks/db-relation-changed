@@ -27,9 +27,9 @@ sed --in-place "s/password:/password: \"$db_pass\"/" /home/diaspora/diaspora/con
 # sed --in-place "0,/username: \"root\"/{s/username: \"root\"/username: \"$db_user\"/}" /home/diaspora/diaspora/config/database.yml
 # sed --in-place "0,/password: \"\"/{s/password: \"\"/password: \"$db_pass\"/}" /home/diaspora/diaspora/config/database.yml
 
-sed --in-place "s/diaspora_production/$db_db/" /home/diaspora/diaspora/config/database.yml
+# sed --in-place "s/diaspora_production/$db_db/" /home/diaspora/diaspora/config/database.yml
 
-juju-log "DB name is $db_db"
+# juju-log "DB name is $db_db"
 touch /home/diaspora/diaspora/.db-available
 
 juju-log "Launching diaspora upgrade"

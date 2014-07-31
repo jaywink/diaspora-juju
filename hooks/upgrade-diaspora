@@ -39,7 +39,7 @@ sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 
 
 if [[ -z $db_setup_done ]]; then
     juju-log "Creating schema"
-    sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && RAILS_ENV=production DB=postgres bundle exec rake db:schema:load"
+    sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && RAILS_ENV=production DB=postgres bundle exec rake db:create db:schema:load"
     touch .diaspora-db-setup-done
 else
     $CHARM_DIR/hooks/stop
