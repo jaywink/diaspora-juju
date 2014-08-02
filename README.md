@@ -11,12 +11,12 @@ To install diaspora*, you will need to know the hostname that will be used.
 Think carefully before installing, as this cannot be changed after installation.
 
 To set the hostname, you will need to create a configuration file. At minimum
-it needs the host name setting, but you can configure other parts of the charm 
-at the same time.
+it needs the host name setting, but you can configure other parts of the
+charm at the same time.
 
 Note! While the hostname can be set after the initial deploy command - the
-application will not be fully configured until a hostname is provided,
-so it is wise to create a configuration file for the initial deploy command.
+application will not be fully configured until a hostname is provided, so it is
+wise to create a configuration file for the initial deploy command.
 
 To deploy (from the Juju Charm store, once this lands there):
 
@@ -34,7 +34,8 @@ this will possible change.
 
 ## Database
 
-If you don't already have one, you also need to deploy a database. Here we are currently restricting ourselves to PostgreSQL.
+If you don't already have one, you also need to deploy a database. Here we are
+currently restricting ourselves to PostgreSQL.
 
 To deploy just a plain database, you can do as follows:
 
@@ -46,18 +47,30 @@ Optionally add `--to=0` to the command to deploy it to the Juju state machine.
 
 *Totally optionally not-relating-to-diaspora section below*
 
-If you are on OpenStack or EC2 and want to attach a volume to the database automatically, `block-storage-broker` and `storage` to handle that part. It makes sense to deploy block-storage-broker to machine 0 (the Juju state machine).
+If you are on OpenStack or EC2 and want to attach a volume to the database
+automatically, `block-storage-broker` and `storage` to handle that part. It
+makes sense to deploy block-storage-broker to machine 0 (the Juju state
+machine).
 
-Unfortunately, currently the `block-storage-broker` charm doesn't work for `trusty` - but I pulled a branch together combining fixes from the `precise` branch. To use that, you need [Bazaar](https://help.ubuntu.com/14.04/serverguide/bazaar.html) installed, then in a suitable working path:
+Unfortunately, currently the `block-storage-broker` charm doesn't work for
+`trusty` - but I pulled a branch together combining fixes from the `precise`
+branch. To use that, you need
+[Bazaar](https://help.ubuntu.com/14.04/serverguide/bazaar.html) installed, then
+in a suitable working path:
 
     mkdir trusty
-    bzr checkout lp:~jaywink/charms/trusty/block-storage-broker/fix-for-trusty trusty/block-storage-broker
+    bzr checkout lp:~jaywink/charms/trusty/block-storage-broker
+    /fix-for-trusty trusty/block-storage-broker
 
 Check out also a fixed version of `storage`:
 
-    bzr checkout lp:~jaywink/charms/trusty/storage/fix-fstab-mount trusty/storage
+    bzr checkout lp:~jaywink/charms/trusty/storage/fix-fstab-mount
+    trusty/storage
 
-Create a .yml config file [specifying the necessary](https://jujucharms.com/~lazypower/trusty/block-storage-broker-0/?text=block-storage-broker#configuration) authorization details, for example as follows:
+Create a .yml config file [specifying the
+necessary](https://jujucharms.com/~lazypower/trusty/block-storage-broker-0/?text
+=block-storage-broker#configuration) authorization details, for example as
+follows:
 
     block-storage-broker:
       default_volume_size: 10
@@ -72,8 +85,10 @@ Create a .yml config file [specifying the necessary](https://jujucharms.com/~laz
 
 Then;
 
-    juju deploy --repository=<path to working dir> local:trusty/block-storage-broker --to=0 --config=<path to config file> 
-    juju deploy --repository=<path to working dir> local:trusty/storage --config=<path to config file> 
+    juju deploy --repository=<path to working dir> local:trusty/block-storage-
+    broker --to=0 --config=<path to config file>
+    juju deploy --repository=<path to working dir> local:trusty/storage
+    --config=<path to config file>
 
 Then, deploy the database:
 
@@ -81,7 +96,8 @@ Then, deploy the database:
     juju add-relation postgresql storage
     juju add-relation storage block-storage-broker
 
-In theory you should soon get a volume attached to the postgresql machine automatically. If this does not happen, check `juju debug-log`.
+In theory you should soon get a volume attached to the postgresql machine
+automatically. If this does not happen, check `juju debug-log`.
 
 ## Finish install
 
@@ -89,8 +105,8 @@ Once services are deployed, create a relation with the database:
 
     juju add-relation postgresql:db-admin diaspora:db
 
-This will then trigger the actual building of the application - as it cannot
-be fully completed without a database.
+This will then trigger the actual building of the application - as it cannot be
+fully completed without a database.
 
 **Important!** Please note diaspora* takes a very long time to install, due to
 the many Ruby gems that need to be pulled in. Depending on machine, this could
@@ -221,7 +237,8 @@ To upgrade the diaspora* instance, you can use the following command:
   reinstall the Diaspora service, please drop the `diaspora_production`
   database manually from the PostgreSQL admin console - or just destroy
   the whole PostgreSQL service.
-  Issue tracked [here](https://github.com/jaywink/diaspora-juju/issues/8).
+  Issue tracked [here]
+  (https://github.com/jaywink/diaspora-juju/issues/8).
 
 # Contact Information
 
@@ -242,8 +259,8 @@ Contact the charm author;
 Please file bugs on [GitHub](https://github.com/jaywink/diaspora-juju). Pull
 requests also welcome!
 
-This charm is also on [Launchpad](https://launchpad.net/diaspora-juju),
-code will be synced there from GitHub.
+This charm is also on [Launchpad](https://launchpad.net/diaspora-juju), code
+will be synced there from GitHub.
 
 # License
 
