@@ -216,8 +216,11 @@ To upgrade the diaspora* instance, you can use the following command:
 * This charm is currently for Ubuntu 14.04 (Trusty) targets only.
 * Running several units at the same time has not been tested by the charm
   author.
-* Currently after destroying the diaspora service, the postgresql service
-  also needs to be destroyed - otherwise db setup will fail.
+* Removing the relation between PostgreSQL and Diaspora does not drop the
+  database due to a timing issue with the hooks firing. If you need to
+  reinstall the Diaspora service, please drop the `diaspora_production`
+  database manually from the PostgreSQL admin console - or just destroy
+  the whole PostgreSQL service.
   Issue tracked [here](https://github.com/jaywink/diaspora-juju/issues/8).
 
 # Contact Information

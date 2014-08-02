@@ -8,8 +8,12 @@ db_pass=`relation-get password`
 db_host=`relation-get private-address`
 
 if [ -z "$db_db" ]; then
-  juju-log "No database information sent yet. Silently exiting"
-  exit 0
+    juju-log "No database information sent yet. Silently exiting"
+    exit 0
+fi
+
+if [[ -e "/home/diaspora/diaspora/.diaspora-db-setup-done" ]]; then
+    juju-log "Database already setup, silently exiting"
 fi
 
 juju-log "Setting database credentials"

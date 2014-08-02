@@ -42,7 +42,7 @@ if [[ -z $db_setup_done ]]; then
     sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && RAILS_ENV=production DB=postgres bundle exec rake db:create db:schema:load"
     touch .diaspora-db-setup-done
 else
-    $CHARM_DIR/hooks/stop
+    service diaspora stop
     juju-log "Running database migrate"
     sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && RAILS_ENV=production DB=postgres bundle exec rake db:migrate"
 fi
