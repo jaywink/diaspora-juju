@@ -27,6 +27,15 @@ juju-log "Upgrading diaspora source"
 if [[ -e ".diaspora-db-setup-done" ]]; then
     db_setup_done=yes
 fi
+
+# make sure we have the remote - in case config has a new repository
+repository=`config-get repository`
+if [[ `git remote -v | grep $repository | wc -l` -ne 2 ]]; then
+    git remote set-url origin git://github.com/$repository.git
+    git fetch origin
+fi
+
+# checkout correct branch
 sudo -u diaspora -H bash -c "git reset && git checkout . && git clean -fd && git checkout `config-get branch` && git pull origin `config-get branch`"
 if [[ ! -z $db_setup_done ]]; then
     touch .diaspora-db-setup-done
@@ -42,7 +51,10 @@ if [[ -z $db_setup_done ]]; then
     sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && RAILS_ENV=production DB=postgres bundle exec rake db:create db:schema:load"
     touch .diaspora-db-setup-done
 else
+    # we don't want to die if stopping fails
+    set +e
     service diaspora stop
+    set -e
     juju-log "Running database migrate"
     sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && RAILS_ENV=production DB=postgres bundle exec rake db:migrate"
 fi
