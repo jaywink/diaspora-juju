@@ -21,13 +21,18 @@ export ENVIRONMENT_URL='https://`config-get hostname`'
 export ENVIRONMENT_CERTIFICATE_AUTHORITIES='/etc/ssl/certs/ca-certificates.crt'
 export SERVER_RAILS_ENVIRONMENT='production'
 export SETTINGS_POD_NAME='`config-get podname`'
-export SETTINGS_ENABLE_REGISTRATIONS='`config-get enable_registrations`'
 export MAIL_ENABLE=true
 export MAIL_SENDER_ADDRESS='no-reply@`config-get hostname`'
 export MAIL_METHOD=sendmail
 EOF
 
-if [[ `config-get statistics` == 'true' ]]; then
+if [[ `config-get enable_registrations` == 'True' ]]; then
+    echo "export SETTINGS_ENABLE_REGISTRATIONS=true"  >> /home/diaspora/.diaspora_config
+else
+    echo "export SETTINGS_ENABLE_REGISTRATIONS=false"  >> /home/diaspora/.diaspora_config
+fi
+
+if [[ `config-get statistics` == 'True' ]]; then
     echo "export PRIVACY_STATISTICS_USER_COUNTS=true"  >> /home/diaspora/.diaspora_config
     echo "export PRIVACY_STATISTICS_POST_COUNTS=true"  >> /home/diaspora/.diaspora_config
     echo "export PRIVACY_STATISTICS_COMMENT_COUNTS=true"  >> /home/diaspora/.diaspora_config
@@ -62,7 +67,7 @@ if [[ ! -z `config-get admin_email` ]]; then
     echo "export ADMINS_PODMIN_EMAIL='`config-get admin_email`'" >> /home/diaspora/.diaspora_config
 fi
 
-if [[ `config-get terms` == 'true' ]]; then
+if [[ `config-get terms` == 'True' ]]; then
     echo "export SETTINGS_TERMS_ENABLE=true"  >> /home/diaspora/.diaspora_config
     if [[ ! -z `config-get terms_governing_law` ]]; then
         echo "export SETTINGS_TERMS_GOVERNING_LAW='`config-get terms_governing_law`'" >> /home/diaspora/.diaspora_config
