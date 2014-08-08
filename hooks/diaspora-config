@@ -73,3 +73,9 @@ fi
 if [[ `grep -c diaspora_config /home/diaspora/.bash_profile` -eq 0 ]]; then
     echo 'source /home/diaspora/.diaspora_config' >> /home/diaspora/.bash_profile
 fi
+
+# server needs to be restarted to make config relevant
+juju-log "Restarting diaspora*"
+service diaspora restart
+
+juju-log "New configuration has been set and service has been restarted."
