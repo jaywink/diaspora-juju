@@ -220,6 +220,19 @@ Once created, set admin account username here.
 
 Set pod administrator email here.
 
+### terms
+
+Default: false
+
+Enable Terms of Service? A default ToS document will be shown to users 
+wanting to create accounts.
+
+### terms_governing_law
+
+If you enable a ToS, you should define what governing laws are used to
+handle legal disputes. For example, state/country or country, depending
+on your location.
+
 ## Upgrading diaspora*
 
 To upgrade the diaspora* instance, you can use the following command:

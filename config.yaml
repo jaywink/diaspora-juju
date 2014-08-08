@@ -85,4 +85,18 @@ options:
     type: string
     description: Set pod administrator email here.
     default: ""
+  terms:
+    type: boolean
+    description: |
+      Enable Terms of Service?
+      A default ToS document will be shown to users wanting to create
+      accounts.
+    default: false
+  terms_governing_law:
+    type: string
+    description: |
+      If you enable a ToS, you should define what governing laws are
+      used to handle legal disputes. For example, state/country or
+      country, depending on your location.
+    default: ""
     

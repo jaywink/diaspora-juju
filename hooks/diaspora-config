@@ -62,6 +62,12 @@ if [[ ! -z `config-get admin_email` ]]; then
     echo "export ADMINS_PODMIN_EMAIL='`config-get admin_email`'" >> /home/diaspora/.diaspora_config
 fi
 
+if [[ `config-get terms` == 'true' ]]; then
+    echo "export SETTINGS_TERMS_ENABLE=true"  >> /home/diaspora/.diaspora_config
+    if [[ ! -z `config-get terms_governing_law` ]]; then
+        echo "export SETTINGS_TERMS_GOVERNING_LAW='`config-get terms_governing_law`'" >> /home/diaspora/.diaspora_config
+    fi
+fi
 
 # 'install' config if needed
 if [[ `grep -c diaspora_config /home/diaspora/.bash_profile` -eq 0 ]]; then
