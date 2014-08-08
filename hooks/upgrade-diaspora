@@ -36,7 +36,7 @@ if [[ `git remote -v | grep $repository | wc -l` -ne 2 ]]; then
 fi
 
 # checkout correct branch
-sudo -u diaspora -H bash -c "git reset && git checkout . && git clean -fd && git checkout `config-get branch` && git pull origin `config-get branch`"
+sudo -u diaspora -H bash -c "git reset && git checkout . && git clean -fd && git checkout `config-get branch` && git pull -f origin `config-get branch`"
 if [[ ! -z $db_setup_done ]]; then
     touch .diaspora-db-setup-done
 fi
