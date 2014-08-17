@@ -92,10 +92,10 @@ options:
       A default ToS document will be shown to users wanting to create
       accounts.
     default: false
-  terms_governing_law:
+  terms_jurisdiction:
     type: string
     description: |
-      If you enable a ToS, you should define what governing laws are
+      If you enable a ToS, you should define what jurisdiction is
       used to handle legal disputes. For example, state/country or
       country, depending on your location.
     default: ""

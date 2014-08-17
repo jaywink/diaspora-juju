@@ -227,11 +227,11 @@ Default: false
 Enable Terms of Service? A default ToS document will be shown to users 
 wanting to create accounts.
 
-### terms_governing_law
+### terms_jurisdiction
 
-If you enable a ToS, you should define what governing laws are used to
-handle legal disputes. For example, state/country or country, depending
-on your location.
+If you enable a ToS, you should define what jurisdiction is
+used to handle legal disputes. For example, state/country or
+country, depending on your location.
 
 ## Upgrading diaspora*
 

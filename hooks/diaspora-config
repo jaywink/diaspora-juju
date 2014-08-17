@@ -69,8 +69,8 @@ fi
 
 if [[ `config-get terms` == 'True' ]]; then
     echo "export SETTINGS_TERMS_ENABLE=true"  >> /home/diaspora/.diaspora_config
-    if [[ ! -z `config-get terms_governing_law` ]]; then
-        echo "export SETTINGS_TERMS_GOVERNING_LAW='`config-get terms_governing_law`'" >> /home/diaspora/.diaspora_config
+    if [[ ! -z `config-get terms_jurisdiction` ]]; then
+        echo "export SETTINGS_TERMS_JURISDICTION='`config-get terms_jurisdiction`'" >> /home/diaspora/.diaspora_config
     fi
 fi
 
