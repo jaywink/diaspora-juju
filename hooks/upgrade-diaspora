@@ -12,6 +12,7 @@ if [[ ! -e /home/diaspora/diaspora ]]; then
     juju-log "Check out diaspora source"
     cd /home/diaspora
     sudo -u diaspora -H bash -c "git clone -b `config-get branch` git://github.com/`config-get repository`.git diaspora"
+    cd diaspora
     # set a git ident to make git happy in some situations when git pull force makes a merge
     sudo -u diaspora -H bash -c "git config user.email 'diaspora@jujucharm'"
     sudo -u diaspora -H bash -c "git config user.name 'Diaspora-Juju'"
