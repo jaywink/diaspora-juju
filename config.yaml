@@ -99,4 +99,61 @@ options:
       used to handle legal disputes. For example, state/country or
       country, depending on your location.
     default: ""
-    
+  backup_sources:
+    type: string
+    default: '["/tmp/files"]'
+    description: List of folder to backup, in json format.
+  backup_destination:
+    type: string
+    default: "backup"
+    description: Remote folder where to store the backups.
+  backup_schedule:
+    type: string
+    default: "daily"
+  backup_passphrase:
+    type: string
+    default: "passphrase"
+    description: PGP passphrase duplicity will use to encrypt the backup.
+  backup_strategy:
+    type: string
+    default: "full"
+    description: Duplicity supports either "full" or "incremental" backup strategy.
+  pre_backup_script_path:
+    type: string
+    default: "/usr/local/sbin/pre_backup.sh"
+    description: Path to the script to run before starting the backup.
+  post_backup_script_path:
+    type: string
+    default: "/usr/local/sbin/post_backup.sh"
+    description: Path to the script to run after starting the backup.
+  pre_restore_script_path:
+    type: string
+    default: "/usr/local/sbin/pre_restore.sh"
+    description: Path to the script to run before starting the backup.
+  post_restore_script_path:
+    type: string
+    default: "/usr/local/sbin/post_restore.sh"
+    description: Path to the script to run after starting the backup.
+  backup_backend:
+    type: string
+    default: "swift"
+    description: At the moment "swift", "u1" and "s3" backends are supported.
+  backup_ftp_password:
+    type: string
+    default: ""
+    description: OAuth token in the FTP_PASSWORD form used by duplicity.
+  backup_aws_access_key_id:
+    type: string
+    default: ""
+  backup_aws_secret_access_key:
+    type: string
+    default: ""
+  backup_swift_username:
+    type: string
+    default: ""
+  backup_swift_password:
+    type: string
+    default: ""
+  backup_swift_url:
+    type: string
+    default: ""

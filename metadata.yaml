@@ -17,3 +17,5 @@ provides:
 requires:
   db:
     interface: pgsql
+  backup:
+    interface: jujubackup
