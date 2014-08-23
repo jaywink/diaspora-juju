@@ -50,13 +50,13 @@ fi
 
 if [[ ! -z `config-get twitter_key` ]]; then
     echo "export SERVICES_TWITTER_ENABLE=true" >> /home/diaspora/.diaspora_config
-    echo "export SERVICES_TWITTER_APP_ID='`config-get twitter_key`'" >> /home/diaspora/.diaspora_config
+    echo "export SERVICES_TWITTER_KEY='`config-get twitter_key`'" >> /home/diaspora/.diaspora_config
     echo "export SERVICES_TWITTER_SECRET='`config-get twitter_secret`'" >> /home/diaspora/.diaspora_config
 fi
 
 if [[ ! -z `config-get tumblr_key` ]]; then
     echo "export SERVICES_TUMBLR_ENABLE=true" >> /home/diaspora/.diaspora_config
-    echo "export SERVICES_TUMBLR_APP_ID='`config-get tumblr_key`'" >> /home/diaspora/.diaspora_config
+    echo "export SERVICES_TUMBLR_KEY='`config-get tumblr_key`'" >> /home/diaspora/.diaspora_config
     echo "export SERVICES_TUMBLR_SECRET='`config-get tumblr_secret`'" >> /home/diaspora/.diaspora_config
 fi
 
