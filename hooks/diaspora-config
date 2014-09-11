@@ -19,17 +19,37 @@ fi
 cat <<EOF > /home/diaspora/.diaspora_config
 export ENVIRONMENT_URL='https://`config-get hostname`'
 export ENVIRONMENT_CERTIFICATE_AUTHORITIES='/etc/ssl/certs/ca-certificates.crt'
+export ENVIRONMENT_SIDEKIQ_CONCURRENCY=`config-get sidekiq_concurrency`
 export SERVER_RAILS_ENVIRONMENT='production'
 export SETTINGS_POD_NAME='`config-get podname`'
 export MAIL_ENABLE=true
 export MAIL_SENDER_ADDRESS='no-reply@`config-get hostname`'
-export MAIL_METHOD=sendmail
 EOF
+
+if [[ `config-get mail_type` == 'smtp' ]]; then
+    echo "export MAIL_METHOD=smtp"  >> /home/diaspora/.diaspora_config
+    echo "export MAIL_SMTP_HOST='`config-get mail_smtp_host`'"  >> /home/diaspora/.diaspora_config
+    echo "export MAIL_SMTP_PORT=`config-get mail_smtp_port`"  >> /home/diaspora/.diaspora_config
+    echo "export MAIL_SMTP_AUTHENTICATION='`config-get mail_smtp_authentication`'"  >> /home/diaspora/.diaspora_config
+    echo "export MAIL_SMTP_USERNAME='`config-get mail_smtp_username`'"  >> /home/diaspora/.diaspora_config
+    echo "export MAIL_SMTP_PASSWORD='`config-get mail_smtp_password`'"  >> /home/diaspora/.diaspora_config
+    if [[ -z `config-get mail_smtp_domain` ]]; then
+        echo "export MAIL_SMTP_DOMAIN='`config-get hostname`'"  >> /home/diaspora/.diaspora_config
+    else
+        echo "export MAIL_SMTP_DOMAIN='`config-get mail_smtp_domain`'"  >> /home/diaspora/.diaspora_config
+    fi
+else
+    echo "export MAIL_METHOD=sendmail"  >> /home/diaspora/.diaspora_config
+fi
 
 if [[ `config-get enable_registrations` == 'True' ]]; then
     echo "export SETTINGS_ENABLE_REGISTRATIONS=true"  >> /home/diaspora/.diaspora_config
 else
     echo "export SETTINGS_ENABLE_REGISTRATIONS=false"  >> /home/diaspora/.diaspora_config
+fi
+
+if [[ `config-get logging_debug` == 'True' ]]; then
+    echo "export ENVIRONMENT_SIDEKIQ_BACKTRACE=false"  >> /home/diaspora/.diaspora_config
 fi
 
 if [[ `config-get statistics` == 'True' ]]; then
@@ -71,6 +91,9 @@ if [[ `config-get terms` == 'True' ]]; then
     echo "export SETTINGS_TERMS_ENABLE=true"  >> /home/diaspora/.diaspora_config
     if [[ ! -z `config-get terms_jurisdiction` ]]; then
         echo "export SETTINGS_TERMS_JURISDICTION='`config-get terms_jurisdiction`'" >> /home/diaspora/.diaspora_config
+    fi
+    if [[ `config-get terms_agelimit` -gt 0 ]]; then
+        echo "export SETTINGS_TERMS_MINIMUM_AGE=`config-get terms_agelimit`" >> /home/diaspora/.diaspora_config
     fi
 fi
 

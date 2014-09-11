@@ -16,6 +16,22 @@ options:
     default: diaspora*
     description: |
       A name for the pod. The most difficult setting. Can be changed later.
+  sidekiq_concurrency:
+    type: int
+    description: |
+      Number of parallel threads Sidekiq uses. Increase this gradually
+      if Sidekiq cannot process jobs fast enough. 2 is good for a minimal
+      pod. The higher this setting, the more memory Sidekiq will need.
+      Warning, do not increase this over 25 without increasing 'pool'
+      in config/database.yml!
+    default: 2
+  logging_debug:
+    type: boolean
+    description: |
+      Enable or disable certain error and debug logging. Keep this disabled
+      if you don't need this information or want to run the pod with as little
+      memory as possible.
+    default: false
   ssl_key:
     type: string
     description: |
@@ -49,6 +65,40 @@ options:
     type: boolean
     description: Enable new users to create accounts.
     default: true
+  mail_type:
+    type: string
+    description: |
+      How emails are sent, options: sendmail or smtp. If smtp, don't forget
+      to set mail_smtp_host.
+    default: sendmail
+  mail_smtp_host:
+    type: string
+    description: Host for SMTP mail server, if used
+    default: ""
+  mail_smtp_port:
+    type: int
+    description: Port for SMTP mail server, if used
+    default: 587
+  mail_smtp_authentication:
+    type: string
+    description: |
+      Authentication type for SMTP, if used.
+      Either 'plain', 'login', 'cram_md5' or 'none'.
+    default: plain
+  mail_smtp_username:
+    type: string
+    description: Username for SMTP mail server, if used
+    default: ""
+  mail_smtp_password:
+    type: string
+    description: Password for SMTP mail server, if used
+    default: ""
+  mail_smtp_domain:
+    type: string
+    description: |
+      Sending 'HELO' command domain for SMTP server, if used.
+      By default pod domain will be used - otherwise set it here.
+    default: ""
   bitcoin_address:
     type: string
     description: Bitcoin address for donations.
@@ -99,6 +149,12 @@ options:
       used to handle legal disputes. For example, state/country or
       country, depending on your location.
     default: ""
+  terms_agelimit:
+    type: int
+    description: |
+      Set a positive number to activate this setting. This age limit is shown
+      in the default ToS document.
+    default: 0
   backup_sources:
     type: string
     default: '["/tmp/files"]'

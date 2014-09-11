@@ -151,6 +151,23 @@ Default: diaspora*
 
 A name for the pod. The most difficult setting. Can be changed later.
 
+### sidekiq_concurrency
+
+Default: 2
+
+Number of parallel threads Sidekiq uses. Increase this gradually if Sidekiq
+cannot process jobs fast enough. 2 is good for a minimal pod. The higher this
+setting, the more memory Sidekiq will need. Warning, do not increase this over
+25 without increasing 'pool' in config/database.yml!
+
+### logging_debug
+
+Default: false
+
+Enable or disable certain error and debug logging. Keep this disabled if you
+don't need this information or want to run the pod with as little memory as
+possible.
+
 ### ssl_key
 
 SSL private key for pod domain. See readme how to best use this configuration
@@ -183,6 +200,43 @@ will be exposed at /statistics.json
 Default: true
 
 Enable new users to create accounts.
+
+### mail_type
+
+Default: sendmail
+
+How emails are sent, options: sendmail or smtp. If smtp, don't forget to set
+mail_smtp_host.
+
+### mail_smtp_host
+
+Host for SMTP mail server, if used.
+
+### mail_smtp_port
+
+Default: 587
+
+Port for SMTP mail server, if used.
+
+### mail_smtp_authentication
+
+Default: plain
+
+Authentication type for SMTP, if used. Either 'plain', 'login', 'cram_md5' or
+'none'.
+
+### mail_smtp_username
+
+Username for SMTP mail server, if used.
+
+### mail_smtp_password
+
+Password for SMTP mail server, if used.
+
+### mail_smtp_domain
+
+Sending 'HELO' command domain for SMTP server, if used. By default pod domain
+will be used - otherwise set it here.
 
 ### bitcoin_address
 
@@ -232,6 +286,15 @@ wanting to create accounts.
 If you enable a ToS, you should define what jurisdiction is
 used to handle legal disputes. For example, state/country or
 country, depending on your location.
+
+### terms_agelimit
+
+Set a positive number to activate this setting. This age limit is shown in the
+default ToS document.
+
+### backup_*
+
+A group of settings related to running backups of file uploads. See the [Juju Backup](https://code.launchpad.net/~jaywink/charms/trusty/jujubackup/trunk) charm and `config.yaml` for details.
 
 ## Upgrading diaspora*
 
