@@ -99,6 +99,10 @@ if [[ `config-get terms` == 'True' ]]; then
     fi
 fi
 
+if [[ `config-get maintenance_remove_old_users` == 'True' ]]; then
+    echo "export SETTINGS_MAINTENANCE_REMOVE_OLD_USERS_ENABLE=true" >> /home/diaspora/.diaspora_config
+fi
+
 # 'install' config if needed
 if [[ `grep -c diaspora_config /home/diaspora/.bash_profile` -eq 0 ]]; then
     echo 'source /home/diaspora/.diaspora_config' >> /home/diaspora/.bash_profile

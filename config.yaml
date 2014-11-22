@@ -99,6 +99,14 @@ options:
       Sending 'HELO' command domain for SMTP server, if used.
       By default pod domain will be used - otherwise set it here.
     default: ""
+  maintenance_remove_old_users:
+    type: boolean
+    description: |
+      Remove old inactive users automatically in the background.
+      This happens after 2 years of inactivity. A warning will be 
+      sent to the account and if the user doesn't log in within 30
+      days, the account will automatically be deleted.
+    default: true
   bitcoin_address:
     type: string
     description: Bitcoin address for donations.
