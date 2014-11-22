@@ -14,7 +14,7 @@ fi
 
 juju-log "Doing some database cleanup as relation is departing"
 cd /home/diaspora/diaspora
-sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && RAILS_ENV=production DB=postgres bundle exec rake db:drop"
+sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && bundle exec rake db:drop"
 
 sudo -u diaspora -H bash -c "cp config/database.yml.example config/database.yml"
 rm -f /home/diaspora/diaspora/.diaspora-db-setup-done

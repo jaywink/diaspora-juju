@@ -17,6 +17,8 @@ if [[ ! -e /home/diaspora/diaspora/config/diaspora.yml ]]; then
 fi
 
 cat <<EOF > /home/diaspora/.diaspora_config
+export RAILS_ENV=production
+export DB=postgres
 export ENVIRONMENT_URL='https://`config-get hostname`'
 export ENVIRONMENT_CERTIFICATE_AUTHORITIES='/etc/ssl/certs/ca-certificates.crt'
 export ENVIRONMENT_SIDEKIQ_CONCURRENCY=`config-get sidekiq_concurrency`

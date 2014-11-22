@@ -48,11 +48,11 @@ fi
 $CHARM_DIR/hooks/diaspora-config
 
 juju-log "Install or upgrade ruby gems"
-sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && RAILS_ENV=production DB=postgres bundle install --without heroku test development"
+sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && bundle install --without heroku test development"
 
 if [[ -z $db_setup_done ]]; then
     juju-log "Creating schema"
-    sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && RAILS_ENV=production DB=postgres bundle exec rake db:create db:schema:load"
+    sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && bundle exec rake db:create db:schema:load"
     touch .diaspora-db-setup-done
 else
     # we don't want to die if stopping fails
@@ -60,11 +60,11 @@ else
     service diaspora stop
     set -e
     juju-log "Running database migrate"
-    sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && RAILS_ENV=production DB=postgres bundle exec rake db:migrate"
+    sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && bundle exec rake db:migrate"
 fi
 
 juju-log "Precompiling assets"
-sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && DB=postgres bundle exec rake assets:precompile"
+sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && bundle exec rake assets:precompile"
 
 juju-log "Make the application ports available, now that we know we have a site to expose"
 open-port 80
