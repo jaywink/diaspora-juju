@@ -50,6 +50,12 @@ $CHARM_DIR/hooks/diaspora-config
 juju-log "Install or upgrade ruby gems"
 sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && bundle install --without heroku test development"
 
+# make sure logrotate is enabled
+if [[ ! -e "/etc/logrotate.d/diaspora" ]]; then
+    juju-log "Configuring logrotate"
+    sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && bundle exec rake maintenance:install_logrotate_config"
+fi
+
 if [[ -z $db_setup_done ]]; then
     juju-log "Creating schema"
     sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use 2.0 && bundle exec rake db:create db:schema:load"
