@@ -23,8 +23,4 @@ if [[ ! -e /home/diaspora/.rvm ]]; then
     echo '[[ -s "~/.rvm/scripts/rvm" ]] && source "~/.rvm/scripts/rvm"' >> /home/diaspora/.bashrc
 fi
 
-juju-log "Installing Ruby"
-apt-get install -y gawk libreadline6-dev libyaml-dev libsqlite3-dev sqlite3 autoconf libgdbm-dev libncurses5-dev automake bison libffi-dev
-sudo -u diaspora -H bash -c "source /home/diaspora/.bashrc; /home/diaspora/.rvm/bin/rvm install 2.0"
-
 $CHARM_DIR/hooks/upgrade-diaspora
