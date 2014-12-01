@@ -8,6 +8,9 @@ if [[ -z `config-get hostname` ]]; then
     exit 0
 fi
 
+juju-log "Making sure we've got latest rvm"
+sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm get stable"
+
 if [[ ! -e /home/diaspora/diaspora ]]; then
     juju-log "Check out diaspora source"
     cd /home/diaspora
