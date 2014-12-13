@@ -26,7 +26,7 @@ cd /home/diaspora/diaspora
 juju-log "Checking for suitable Ruby and installing if needed"
 DIASPORA_RUBY_VERSION=`cat .ruby-version`
 apt-get install -y gawk libreadline6-dev libyaml-dev libsqlite3-dev sqlite3 autoconf libgdbm-dev libncurses5-dev automake bison libffi-dev
-sudo -u diaspora -H bash -c "source /home/diaspora/.bashrc; /home/diaspora/.rvm/bin/rvm install $DIASPORA_RUBY_VERSION"
+sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm install $DIASPORA_RUBY_VERSION"
 
 if [[ ! -e "/home/diaspora/diaspora/.db-available" ]]; then
     if [[ ! -e "/home/diaspora/diaspora/.diaspora-db-setup-done" ]]; then
@@ -48,7 +48,7 @@ if [[ `git remote -v | grep $repository | wc -l` -ne 2 ]]; then
 fi
 
 # checkout correct branch
-sudo -u diaspora -H bash -c "git reset && git checkout . && git clean -fd && git checkout `config-get branch` && git pull -f origin `config-get branch`"
+sudo -u diaspora -H bash -c "git fetch origin && git reset && git checkout . && git clean -fd && git checkout `config-get branch` && git pull -f origin `config-get branch`"
 if [[ ! -z $db_setup_done ]]; then
     touch .diaspora-db-setup-done
 fi
