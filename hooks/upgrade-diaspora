@@ -28,15 +28,15 @@ DIASPORA_RUBY_VERSION=`cat .ruby-version`
 apt-get install -y gawk libreadline6-dev libyaml-dev libsqlite3-dev sqlite3 autoconf libgdbm-dev libncurses5-dev automake bison libffi-dev
 sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm install $DIASPORA_RUBY_VERSION"
 
-if [[ ! -e "/home/diaspora/diaspora/.db-available" ]]; then
-    if [[ ! -e "/home/diaspora/diaspora/.diaspora-db-setup-done" ]]; then
+if [[ ! -e "/home/diaspora/.db-available" ]]; then
+    if [[ ! -e "/home/diaspora/.diaspora-db-setup-done" ]]; then
         juju-log "No database yet. Silently exiting"
         exit 0
     fi
 fi
 
 juju-log "Upgrading diaspora source"
-if [[ -e ".diaspora-db-setup-done" ]]; then
+if [[ -e "/home/diaspora/.diaspora-db-setup-done" ]]; then
     db_setup_done=yes
 fi
 
@@ -49,9 +49,6 @@ fi
 
 # checkout correct branch
 sudo -u diaspora -H bash -c "git fetch origin && git reset && git checkout . && git clean -fd && git checkout `config-get branch` && git pull -f origin `config-get branch`"
-if [[ ! -z $db_setup_done ]]; then
-    touch .diaspora-db-setup-done
-fi
 
 $CHARM_DIR/hooks/diaspora-config
 
@@ -67,7 +64,7 @@ fi
 if [[ -z $db_setup_done ]]; then
     juju-log "Creating schema"
     sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use $DIASPORA_RUBY_VERSION && bundle exec rake db:create db:schema:load"
-    touch .diaspora-db-setup-done
+    touch /home/diaspora/.diaspora-db-setup-done
 else
     # we don't want to die if stopping fails
     set +e

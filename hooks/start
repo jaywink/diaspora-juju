@@ -5,7 +5,7 @@
 
 set -e
 
-if [[ ! -e "/home/diaspora/diaspora/.diaspora-db-setup-done" ]]; then
+if [[ ! -e "/home/diaspora/.diaspora-db-setup-done" ]]; then
     juju-log "No database yet. Silently exiting"
     exit 0
 fi

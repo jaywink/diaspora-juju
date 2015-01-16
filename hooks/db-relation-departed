@@ -18,4 +18,4 @@ DIASPORA_RUBY_VERSION=`cat .ruby-version`
 sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use $DIASPORA_RUBY_VERSION && bundle exec rake db:drop"
 
 sudo -u diaspora -H bash -c "cp config/database.yml.example config/database.yml"
-rm -f /home/diaspora/diaspora/.diaspora-db-setup-done
+rm -f /home/diaspora/.diaspora-db-setup-done

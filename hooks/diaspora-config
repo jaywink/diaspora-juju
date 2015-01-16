@@ -108,7 +108,7 @@ if [[ `grep -c diaspora_config /home/diaspora/.bash_profile` -eq 0 ]]; then
     echo 'source /home/diaspora/.diaspora_config' >> /home/diaspora/.bash_profile
 fi
 
-if [[ ! -e "/home/diaspora/diaspora/.diaspora-db-setup-done" ]]; then
+if [[ ! -e "/home/diaspora/.diaspora-db-setup-done" ]]; then
     juju-log "No database yet. Silently exiting"
     exit 0
 fi

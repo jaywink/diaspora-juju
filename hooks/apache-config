@@ -11,31 +11,31 @@ cat <<EOF > /etc/apache2/sites-available/diaspora.conf
 <VirtualHost *:443>
     ServerName `config-get hostname`
     DocumentRoot /home/diaspora/diaspora/public
-     
+
     RewriteEngine On
-     
+
     RewriteCond %{DOCUMENT_ROOT}/%{REQUEST_FILENAME} !-f
     RewriteRule ^/(.*)$ balancer://upstream%{REQUEST_URI} [P,QSA,L]
-     
+
     <Proxy balancer://upstream>
         BalancerMember http://127.0.0.1:3000
     </Proxy>
-     
+
     ProxyRequests Off
     ProxyVia On
     ProxyPreserveHost On
     RequestHeader set X_FORWARDED_PROTO https
-     
+
     <Proxy *>
         Require all granted
     </Proxy>
-     
+
     <Directory /home/diaspora/diaspora/public>
         Require all granted
         AllowOverride all
         Options -MultiViews
     </Directory>
-     
+
     SSLEngine On
     SSLCertificateFile /etc/ssl/certs/diaspora.pem
     SSLCertificateKeyFile /etc/ssl/private/diaspora.key
@@ -72,9 +72,6 @@ a2enmod proxy
 a2enmod proxy_http
 a2enmod proxy_balancer
 a2enmod lbmethod_byrequests
-
-juju-log "Disable default apache2 site"
-a2dissite 000-default
 
 juju-log "Enable apache2 site"
 a2ensite diaspora
