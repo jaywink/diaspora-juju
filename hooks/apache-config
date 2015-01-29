@@ -36,6 +36,8 @@ cat <<EOF > /etc/apache2/sites-available/diaspora.conf
         Options -MultiViews
     </Directory>
 
+    ErrorDocument 503 /503.html
+
     SSLEngine On
     SSLCertificateFile /etc/ssl/certs/diaspora.pem
     SSLCertificateKeyFile /etc/ssl/private/diaspora.key
