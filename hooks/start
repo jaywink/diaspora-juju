@@ -15,6 +15,7 @@ cp $CHARM_DIR/init/diaspora.conf /etc/init/diaspora.conf
 
 service apache2 restart
 service diaspora restart
+sleep 10
 
 juju-log "Diaspora server has been started"
 

@@ -121,6 +121,10 @@ options:
     type: string
     description: Facebook app secret if ID given.
     default: ""
+  facebook_authorized:
+    type: string
+    description: Facebook authorized users scope (0.5.1.x ->)
+    default: "false"
   twitter_key:
     type: string
     description: Twitter key for services integration.

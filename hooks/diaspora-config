@@ -68,6 +68,7 @@ if [[ ! -z `config-get facebook_app_id` ]]; then
     echo "export SERVICES_FACEBOOK_ENABLE=true" >> /home/diaspora/.diaspora_config
     echo "export SERVICES_FACEBOOK_APP_ID='`config-get facebook_app_id`'" >> /home/diaspora/.diaspora_config
     echo "export SERVICES_FACEBOOK_SECRET='`config-get facebook_app_secret`'" >> /home/diaspora/.diaspora_config
+    echo "export SERVICES_FACEBOOK_AUTHORIZED='`config-get facebook_authorized`'" >> /home/diaspora/.diaspora_config
 fi
 
 if [[ ! -z `config-get twitter_key` ]]; then
@@ -114,7 +115,13 @@ if [[ ! -e "/home/diaspora/.diaspora-db-setup-done" ]]; then
 fi
 
 # server needs to be restarted to make config relevant
-juju-log "Restarting diaspora*"
-service diaspora restart
-
-juju-log "New configuration has been set and service has been restarted."
+juju-log "DEBUG: context id is $JUJU_CONTEXT_ID"
+# TODO: this check does not work yet
+if [[ $JUJU_HOOK_NAME != "upgrade-diaspora" ]]; then
+    # we only want to run restart if not doing upgrade-diaspora,
+    # since otherwise it runs twice
+    juju-log "Restarting diaspora*"
+    service diaspora restart
+    sleep 10
+    juju-log "New configuration has been set and service has been restarted."
+fi

@@ -16,6 +16,12 @@ if [[ -e "/home/diaspora/.diaspora-db-setup-done" ]]; then
     juju-log "Database already setup, silently exiting"
 fi
 
+if [[ ! -e /home/diaspora/diaspora ]]; then
+    juju-log "Check out diaspora source"
+    cd /home/diaspora
+    sudo -u diaspora -H bash -c "git clone -b `config-get branch` git://github.com/`config-get repository`.git diaspora"
+fi
+
 juju-log "Setting database credentials"
 cd /home/diaspora/diaspora
 sudo -u diaspora -H bash -c "cp config/database.yml.example config/database.yml"

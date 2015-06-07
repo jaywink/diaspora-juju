@@ -12,10 +12,11 @@ if [ -z "$db_db" ]; then
   exit 0
 fi
 
-juju-log "Doing some database cleanup as relation is departing"
-cd /home/diaspora/diaspora
-DIASPORA_RUBY_VERSION=`cat .ruby-version`
-sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use $DIASPORA_RUBY_VERSION && bundle exec rake db:drop"
+juju-log "NOTE! DB cleanup not implemented yet - clean up old DB manually!"
+#juju-log "Doing some database cleanup as relation is departing"
+#cd /home/diaspora/diaspora
+#DIASPORA_RUBY_VERSION=`cat .ruby-version`
+#sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use $DIASPORA_RUBY_VERSION && bundle exec rake db:drop"
 
-sudo -u diaspora -H bash -c "cp config/database.yml.example config/database.yml"
-rm -f /home/diaspora/.diaspora-db-setup-done
+#sudo -u diaspora -H bash -c "cp config/database.yml.example config/database.yml"
+#rm -f /home/diaspora/.diaspora-db-setup-done
