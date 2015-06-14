@@ -4,7 +4,7 @@ set -e
 
 function diaspora_command {
     # Run a command in diaspora context
-    sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use $DIASPORA_RUBY_VERSION && gem install bundler && $1"
+    sudo -u diaspora -H bash -c "source /home/diaspora/.bash_profile && rvm use $DIASPORA_RUBY_VERSION@diaspora && gem install bundler && $1"
 }
 
 # check some configs
