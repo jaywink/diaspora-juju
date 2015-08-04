@@ -23,6 +23,7 @@ export ENVIRONMENT_URL='https://`config-get hostname`'
 export ENVIRONMENT_CERTIFICATE_AUTHORITIES='/etc/ssl/certs/ca-certificates.crt'
 export ENVIRONMENT_SIDEKIQ_CONCURRENCY=`config-get sidekiq_concurrency`
 export SERVER_RAILS_ENVIRONMENT='production'
+export SERVER_LISTEN='0.0.0.0:3000'
 export SETTINGS_POD_NAME='`config-get podname`'
 export MAIL_ENABLE=true
 export MAIL_SENDER_ADDRESS='no-reply@`config-get hostname`'
