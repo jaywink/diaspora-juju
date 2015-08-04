@@ -61,7 +61,7 @@ juju-log "Launching 'diaspora-config'"
 $CHARM_DIR/hooks/diaspora-config
 
 juju-log "Install or upgrade ruby gems"
-diaspora_command "bin/bundle install --without test development"
+diaspora_command "bin/bundle install --deployment --with postgresql"
 
 juju-log "Make sure migrate/ path is clean"
 sudo -u diaspora -H bash -c "git clean -f db/migrate/"
