@@ -5,7 +5,7 @@ set -e
 juju-log "Installing dependencies and upgrading system"
 # TODO: make this optional for precise only
 # apt-add-repository -y ppa:jaywink/curldebian
-apt-get update && apt-get -y dist-upgrade
+apt-get update && apt-get -y upgrade
 # TODO: make libmysqlclient-dev / libpq-dev choice depending on db, now just pgsql
 apt-get -y install build-essential git curl imagemagick libmagickwand-dev nodejs redis-server libcurl4-openssl-dev libxml2-dev libxslt-dev libpq-dev apache2 sendmail
 
