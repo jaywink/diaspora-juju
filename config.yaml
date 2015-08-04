@@ -51,10 +51,10 @@ options:
     description: |
       If you don't set 'ssl_key' and 'ssl_cert', by default the
       default snakebite self-signed certifications will be used until a proper
-      cert is set. Set this to false once you transfer the cert manually 
+      cert is set. Set this to false once you transfer the cert manually
       to the server.
-      Note! diaspora* requires a valid SSL certificate for federation. 
-      Running a production real diaspora* pod using snakebite certs 
+      Note! diaspora* requires a valid SSL certificate for federation.
+      Running a production real diaspora* pod using snakebite certs
       is **not** possible.
     default: true
   statistics:
@@ -105,7 +105,7 @@ options:
     type: boolean
     description: |
       Remove old inactive users automatically in the background.
-      This happens after 2 years of inactivity. A warning will be 
+      This happens after 2 years of inactivity. A warning will be
       sent to the account and if the user doesn't log in within 30
       days, the account will automatically be deleted.
     default: true
@@ -171,6 +171,21 @@ options:
       Set a positive number to activate this setting. This age limit is shown
       in the default ToS document.
     default: 0
+  verbose_curl_debug:
+    type: boolean
+    description: |
+      Enable verbose curl debug logging.
+    default: false
+  relay_outbound:
+    type: boolean
+    description: |
+      Push out public posts to a relay.
+    default: true
+  relay_inbound:
+    type: boolean
+    description: |
+      Subscribe to relay posts.
+    default: true
   backup_sources:
     type: string
     default: '["/tmp/files"]'
