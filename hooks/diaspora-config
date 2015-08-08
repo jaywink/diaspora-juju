@@ -123,6 +123,15 @@ if [[ `grep -c diaspora_config /home/diaspora/.bash_profile` -eq 0 ]]; then
     echo 'source /home/diaspora/.diaspora_config' >> /home/diaspora/.bash_profile
 fi
 
+# 'install' local config if needed
+# local config is a file which will not be touched, can be used to override
+if [[ `grep -c diaspora_local_config /home/diaspora/.bash_profile` -eq 0 ]]; then
+    echo 'source /home/diaspora/.diaspora_local_config' >> /home/diaspora/.bash_profile
+    if [[ ! -e "/home/diaspora/.diaspora_local_config" ]]; then
+        echo "Local configuration for diaspora. Put override env variables here. This will not be overwritten." >> /home/diaspora/.diaspora_local_config
+    fi
+fi
+
 if [[ ! -e "/home/diaspora/.diaspora-db-setup-done" ]]; then
     juju-log "No database yet. Silently exiting"
     exit 0
