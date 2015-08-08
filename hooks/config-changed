@@ -18,10 +18,11 @@ if [[ ! -e /home/diaspora/diaspora ]]; then
     $CHARM_DIR/hooks/upgrade-diaspora
 else
     juju-log "DEBUG: context id is $JUJU_CONTEXT_ID"
-    # TODO: this check does not work yet
-    if [[ $JUJU_HOOK_NAME != "upgrade-diaspora" ]]; then
+    if [[ $JUJU_CONTEXT_ID != *"upgrade-diaspora"* ]]; then
         # we only want to run diaspora-config if not doing upgrade-diaspora,
         # since otherwise it runs twice
         $CHARM_DIR/hooks/diaspora-config
+    else
+        juju-log "DEBUG: skipping diaspora-config here since it will be done later"
     fi
 fi
