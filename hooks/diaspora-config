@@ -128,7 +128,8 @@ fi
 if [[ `grep -c diaspora_local_config /home/diaspora/.bash_profile` -eq 0 ]]; then
     echo 'source /home/diaspora/.diaspora_local_config' >> /home/diaspora/.bash_profile
     if [[ ! -e "/home/diaspora/.diaspora_local_config" ]]; then
-        echo "Local configuration for diaspora. Put override env variables here. This will not be overwritten." >> /home/diaspora/.diaspora_local_config
+        echo "## Local configuration for diaspora. Put override env variables here. This will not be overwritten." > /home/diaspora/.diaspora_local_config
+        chown diaspora: /home/diaspora/.diaspora_local_config
     fi
 fi
 
@@ -139,8 +140,8 @@ fi
 
 # server needs to be restarted to make config relevant
 juju-log "DEBUG: context id is $JUJU_CONTEXT_ID"
-if [[ $JUJU_CONTEXT_ID != *"upgrade-diaspora"* ]]; then
-    # we only want to run restart if not doing upgrade-diaspora,
+if [[ $JUJU_CONTEXT_ID != *"upgrade-diaspora"* ]] && [[ $JUJU_CONTEXT_ID != *"upgrade-charm"* ]]; then
+    # we only want to run restart if not doing upgrade-diaspora or upgrade-charm,
     # since otherwise it runs twice
     juju-log "Restarting diaspora*"
     service diaspora restart

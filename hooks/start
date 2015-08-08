@@ -13,10 +13,17 @@ fi
 # Make sure we always use latest init
 cp $CHARM_DIR/init/diaspora.conf /etc/init/diaspora.conf
 
-service apache2 restart
-service diaspora restart
-sleep 10
-
-juju-log "Diaspora server has been started"
+# server needs to be restarted to make config relevant
+juju-log "DEBUG: context id is $JUJU_CONTEXT_ID"
+if [[ $JUJU_CONTEXT_ID != *"upgrade-charm"* ]]; then
+    # we only want to restart if not upgrade-charm,
+    # since otherwise it runs twice
+    service apache2 restart
+    service diaspora restart
+    sleep 10
+    juju-log "Diaspora server has been started"
+else
+    juju-log "DEBUG: skipping restart here since it will be done later"
+fi
 
 exit 0
