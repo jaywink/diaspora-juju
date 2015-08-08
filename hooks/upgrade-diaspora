@@ -66,13 +66,6 @@ diaspora_command "bin/bundle install --with postgresql"
 juju-log "Make sure migrate/ path is clean"
 sudo -u diaspora -H bash -c "git clean -f db/migrate/"
 
-# make sure logrotate is enabled
-# DISABLED atm
-#if [[ ! -e "/etc/logrotate.d/diaspora" ]]; then
-#    juju-log "Configuring logrotate"
-#    sudo -u root -H bash -c "source /home/diaspora/.bash_profile && rvm use $DIASPORA_RUBY_VERSION && bin/rake maintenance:install_logrotate_config"
-#fi
-
 if [[ -z $db_setup_done ]]; then
     juju-log "Creating schema"
     diaspora_command "bin/rake db:create db:schema:load"
