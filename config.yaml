@@ -46,6 +46,12 @@ options:
       SSL cert for pod domain. See readme how to best use this
       configuration value.
     default: ""
+  ssl_chain:
+    type: string
+    description: |
+      SSL chain for cert. See readme how to best use this
+      configuration value.
+    default: ""
   ssl_snakebite:
     type: boolean
     description: |

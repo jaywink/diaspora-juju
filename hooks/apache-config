@@ -41,7 +41,7 @@ cat <<EOF > /etc/apache2/sites-available/diaspora.conf
     SSLEngine On
     SSLCertificateFile /etc/ssl/certs/diaspora.pem
     SSLCertificateKeyFile /etc/ssl/private/diaspora.key
-    SSLCertificateChainFile /etc/ssl/certs/sub.class1.server.ca.pem
+    SSLCertificateChainFile /etc/ssl/certs/diaspora_chain.pem
 </VirtualHost>
 EOF
 
@@ -53,6 +53,9 @@ if [[ ! -z `config-get ssl_key` ]] && [[ ! -z `config-get ssl_cert` ]]; then
 EOF
     cat <<EOF > /etc/ssl/private/diaspora.key
 `config-get ssl_key | base64 -d`
+EOF
+    cat <<EOF > /etc/ssl/certs/diaspora_chain.pem
+`config-get ssl_chain | base64 -d`
 EOF
 else
     if [[ `config-get ssl_snakebite` == "True" ]]; then
