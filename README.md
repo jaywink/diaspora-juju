@@ -3,8 +3,8 @@
 diaspora\* social network server. See more about diaspora* here -
 http://diasporafoundation.org
 
-Note! This version corresponds to diaspora* 0.5.x version. Not guaranteed to 
-work with older or newer major versions.
+**Note! This version corresponds to diaspora* 0.5.99.x development version (ie the 0.6 dev branch). Not guaranteed to 
+work with older or newer major versions.**
 
 # Usage
 
