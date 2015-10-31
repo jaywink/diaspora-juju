@@ -13,12 +13,19 @@ cat <<EOF > /etc/apache2/sites-available/diaspora.conf
     DocumentRoot /home/diaspora/diaspora/public
 
     RewriteEngine On
+    
+    RewriteCond %{REQUEST_URI} ^/http-bind
+    RewriteRule ^/(http\-bind.*)$ balancer://chat%{REQUEST_URI} [P,QSA,L]
 
     RewriteCond %{DOCUMENT_ROOT}/%{REQUEST_FILENAME} !-f
     RewriteRule ^/(.*)$ balancer://upstream%{REQUEST_URI} [P,QSA,L]
 
     <Proxy balancer://upstream>
         BalancerMember http://127.0.0.1:3000
+    </Proxy>
+    
+    <Proxy balancer://chat>
+        BalancerMember http://0.0.0.0:5280
     </Proxy>
 
     ProxyRequests Off
