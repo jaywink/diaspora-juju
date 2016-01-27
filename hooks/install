@@ -12,6 +12,8 @@ apt-get -y install build-essential git curl imagemagick libmagickwand-dev nodejs
 if [[ ! -e /home/diaspora ]]; then
     juju-log "Adding diaspora user"
     useradd -m -s /bin/bash diaspora
+    addgroup www-data diaspora
+    chmod 750 /home/diaspora
 fi
 
 cd /home/diaspora/
