@@ -1,3 +1,5 @@
+**NOTE! HOX! ACHTUNG! I don't maintain this charm any more. You can find a maintained version [on Launchpad](https://code.launchpad.net/~joe/charms/trusty/diaspora/trunk).**
+
 # Overview
 
 diaspora\* social network server. See more about diaspora* here -
